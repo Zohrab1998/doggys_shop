@@ -3,7 +3,7 @@ import type { AnimalType, ProductCategory } from "@prisma/client";
 export const ANIMAL_TYPE_OPTIONS: { value: AnimalType; label: string; emoji: string }[] = [
   { value: "DOG", label: "Dogs", emoji: "🐶" },
   { value: "CAT", label: "Cats", emoji: "🐱" },
-  { value: "BIRD", label: "Birds", emoji: "🦜" },
+  { value: "BIRD", label: "Birds", emoji: "🐦" },
   { value: "HAMSTER", label: "Hamsters", emoji: "🐹" },
 ];
 
@@ -24,5 +24,7 @@ export function categoryLabel(value: ProductCategory | null | undefined): string
 }
 
 export function formatPrice(amd: number): string {
-  return amd.toLocaleString("hy-AM", { style: "currency", currency: "AMD", maximumFractionDigits: 0 });
+  // Plain "AMD" suffix rather than the ֏ glyph — the dram sign has poor font coverage
+  // and renders as a tofu box in a lot of common UI fonts.
+  return `${amd.toLocaleString("en-US")} AMD`;
 }

@@ -32,18 +32,20 @@ export default function ProductCard({ product }: { product: ProductCardData }) {
           sizes="(max-width: 768px) 50vw, 25vw"
           className="object-cover"
         />
+        <span className="absolute top-2 right-2 rounded-md bg-brand-navy px-2 py-1 text-xs font-bold text-white">
+          {formatPrice(product.priceAmd)}
+        </span>
       </div>
       <div className="flex flex-1 flex-col gap-1 p-4">
         <p className="text-sm font-semibold text-brand-navy">{product.name}</p>
         <p className="text-xs text-brand-navy/60">
           <Stars rating={product.rating} /> ({product.reviewCount})
         </p>
-        <p className="mt-1 font-bold text-brand-navy">{formatPrice(product.priceAmd)}</p>
         <button
           type="button"
           disabled
           title="Cart is coming soon"
-          className="mt-auto rounded-full bg-brand-orange px-4 py-2 text-sm font-medium text-white opacity-60"
+          className="mt-2 rounded-full bg-brand-orange px-4 py-2 text-xs font-bold tracking-wide text-white uppercase opacity-70"
         >
           Add to cart
         </button>
