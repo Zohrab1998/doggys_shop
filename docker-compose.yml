@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:16
+    container_name: doggys_shop_db
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: doggy
+      POSTGRES_PASSWORD: doggy
+      POSTGRES_DB: doggys_shop
+    volumes:
+      - doggys_shop_pgdata:/var/lib/postgresql/data
+
+volumes:
+  doggys_shop_pgdata:

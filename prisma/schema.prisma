@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum AnimalType {
+  DOG
+  CAT
+  BIRD
+  HAMSTER
+}
+
+enum ProductCategory {
+  TOYS
+  MEDICINE
+  FOOD
+  HYGIENE
+  ACCESSORIES
+}
+
+model Brand {
+  id   String @id @default(cuid())
+  name String @unique
+  slug String @unique
+
+  products Product[]
+}
+
+model Product {
+  id          String  @id @default(cuid())
+  name        String
+  slug        String  @unique
+  description String?
+
+  /// Whole Armenian Dram (AMD has no practical subunit in everyday pricing).
+  priceAmd Int
+  imageUrl String
+
+  rating      Float @default(0)
+  reviewCount Int   @default(0)
+
+  animalType AnimalType
+  category   ProductCategory
+
+  brandId String?
+  brand   Brand?  @relation(fields: [brandId], references: [id], onDelete: SetNull)
+
+  inStock Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([animalType])
+  @@index([category])
+  @@index([brandId])
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  message   String
+  createdAt DateTime @default(now())
+
+  @@index([createdAt(sort: Desc)])
+}
