@@ -38,15 +38,17 @@ export default function FilterSidebar({
   }
 
   const inputClass =
-    "w-20 rounded-md border border-brand-blue/20 px-2 py-1 text-sm outline-none focus:border-brand-blue";
+    "w-20 rounded-md border border-sky-500/20 px-2 py-1 text-sm outline-none focus:border-sky-500";
 
   return (
-    <aside className="space-y-6">
+    <aside className="h-fit space-y-6 rounded-2xl bg-white/70 p-5 shadow-sm">
+      <h2 className="text-sm font-extrabold tracking-widest text-orange-500 uppercase">Filtration</h2>
+
       <div>
-        <p className="text-xs font-semibold uppercase tracking-wider text-brand-navy/50">Animal</p>
+        <p className="text-xs font-bold tracking-wide text-slate-500 uppercase">Animal</p>
         <div className="mt-2 space-y-1">
           {ANIMAL_TYPE_OPTIONS.map((option) => (
-            <label key={option.value} className="flex items-center gap-2 text-sm text-brand-navy">
+            <label key={option.value} className="flex items-center gap-2 text-sm text-slate-900">
               <input
                 type="checkbox"
                 checked={selected.animalType === option.value}
@@ -59,10 +61,10 @@ export default function FilterSidebar({
       </div>
 
       <div>
-        <p className="text-xs font-semibold uppercase tracking-wider text-brand-navy/50">Category</p>
+        <p className="text-xs font-bold tracking-wide text-slate-500 uppercase">Category</p>
         <div className="mt-2 space-y-1">
           {CATEGORY_OPTIONS.map((option) => (
-            <label key={option.value} className="flex items-center gap-2 text-sm text-brand-navy">
+            <label key={option.value} className="flex items-center gap-2 text-sm text-slate-900">
               <input
                 type="checkbox"
                 checked={selected.category === option.value}
@@ -76,10 +78,10 @@ export default function FilterSidebar({
 
       {brands.length > 0 ? (
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-brand-navy/50">Brand</p>
+          <p className="text-xs font-bold tracking-wide text-slate-500 uppercase">Brand</p>
           <div className="mt-2 space-y-1">
             {brands.map((brand) => (
-              <label key={brand.id} className="flex items-center gap-2 text-sm text-brand-navy">
+              <label key={brand.id} className="flex items-center gap-2 text-sm text-slate-900">
                 <input
                   type="checkbox"
                   checked={selected.brandId === brand.id}
@@ -93,9 +95,7 @@ export default function FilterSidebar({
       ) : null}
 
       <div>
-        <p className="text-xs font-semibold uppercase tracking-wider text-brand-navy/50">
-          Price range (AMD)
-        </p>
+        <p className="text-xs font-bold tracking-wide text-slate-500 uppercase">Price range (AMD)</p>
         <div className="mt-2 flex items-center gap-2">
           <input
             type="number"
@@ -105,7 +105,7 @@ export default function FilterSidebar({
             defaultValue={selected.priceMin ?? ""}
             onBlur={(e) => updateParam("priceMin", e.target.value || null)}
           />
-          <span className="text-brand-navy/40">–</span>
+          <span className="text-slate-400">–</span>
           <input
             type="number"
             min={0}
@@ -120,7 +120,7 @@ export default function FilterSidebar({
       <button
         type="button"
         onClick={() => router.push("/shop")}
-        className="text-sm font-medium text-brand-orange-dark hover:underline"
+        className="text-sm font-medium text-orange-600 hover:underline"
       >
         Clear all filters
       </button>

@@ -33,16 +33,16 @@ export default function ContactForm() {
   }
 
   const fieldClass =
-    "mt-1 w-full rounded-xl border border-brand-blue/20 bg-white px-4 py-2.5 text-sm outline-none focus:border-brand-blue";
+    "mt-1 w-full rounded-xl border border-sky-500/20 bg-white px-4 py-2.5 text-sm outline-none focus:border-sky-500";
 
   return (
     <form onSubmit={onSubmit} className="mt-6 space-y-4">
       <div>
-        <label className="text-xs font-semibold uppercase tracking-wider text-brand-navy/60">Name</label>
+        <label className="text-xs font-semibold uppercase tracking-wider text-slate-900/60">Name</label>
         <input required className={fieldClass} value={name} onChange={(e) => setName(e.target.value)} />
       </div>
       <div>
-        <label className="text-xs font-semibold uppercase tracking-wider text-brand-navy/60">Email</label>
+        <label className="text-xs font-semibold uppercase tracking-wider text-slate-900/60">Email</label>
         <input
           required
           type="email"
@@ -52,7 +52,7 @@ export default function ContactForm() {
         />
       </div>
       <div>
-        <label className="text-xs font-semibold uppercase tracking-wider text-brand-navy/60">Message</label>
+        <label className="text-xs font-semibold uppercase tracking-wider text-slate-900/60">Message</label>
         <textarea
           required
           rows={5}
@@ -64,11 +64,11 @@ export default function ContactForm() {
       <button
         type="submit"
         disabled={submitting}
-        className="rounded-full bg-brand-orange px-6 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
+        className="rounded-full bg-orange-500 px-6 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
       >
         {submitting ? "Sending…" : "Send message"}
       </button>
-      {status ? <p className="text-sm text-brand-navy/80">{status}</p> : null}
+      {status ? <p className="text-sm text-slate-900/80">{status}</p> : null}
     </form>
   );
 }

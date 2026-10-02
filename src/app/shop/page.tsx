@@ -53,7 +53,7 @@ export default async function ShopPage({
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-10">
-      <h1 className="text-3xl font-bold text-brand-navy">Shop</h1>
+      <h1 className="text-3xl font-bold text-slate-900">Shop</h1>
       <div className="mt-6 grid gap-8 lg:grid-cols-[260px_1fr]">
         <Suspense fallback={null}>
           <FilterSidebar
@@ -62,9 +62,9 @@ export default async function ShopPage({
           />
         </Suspense>
         <div>
-          <p className="mb-4 text-sm text-brand-navy/60">{products.length} products</p>
+          <p className="mb-4 text-sm text-slate-900/60">{products.length} products</p>
           {products.length === 0 ? (
-            <p className="text-brand-navy/60">No products match these filters.</p>
+            <p className="text-slate-900/60">No products match these filters.</p>
           ) : (
             <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
               {products.map((product) => (
