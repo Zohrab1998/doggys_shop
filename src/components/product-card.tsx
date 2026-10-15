@@ -1,4 +1,5 @@
 import Image from "next/image";
+import AddToCartButton from "@/components/add-to-cart-button";
 import { Stars } from "@/components/stars";
 import { formatPrice } from "@/lib/catalog";
 
@@ -31,14 +32,7 @@ export default function ProductCard({ product }: { product: ProductCardData }) {
         <p className="text-sm font-bold text-brand-navy">{product.name}</p>
         <Stars rating={product.rating} />
         <p className="text-xs text-brand-navy/50">({product.reviewCount})</p>
-        <button
-          type="button"
-          disabled
-          title="Cart is coming soon"
-          className="mt-2 rounded-full bg-brand-orange py-2 text-xs font-bold tracking-wide text-white uppercase opacity-70"
-        >
-          Add to cart
-        </button>
+        <AddToCartButton productId={product.id} />
       </div>
     </article>
   );

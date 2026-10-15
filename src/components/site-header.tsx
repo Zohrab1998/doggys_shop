@@ -1,4 +1,5 @@
 import Link from "next/link";
+import AccountCartMenu from "@/components/account-cart-menu";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
@@ -21,6 +22,7 @@ export default function SiteHeader() {
             </Link>
           ))}
         </nav>
+        <AccountCartMenu />
       </div>
     </header>
   );
