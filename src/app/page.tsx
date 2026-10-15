@@ -1,9 +1,10 @@
 import { Bone, Droplets, type LucideIcon, Pill, ShoppingBag, ToyBrick } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { ProductCategory } from "@prisma/client";
 import ProductCard from "@/components/product-card";
 import HeroIllustration from "@/components/hero-illustration";
-import PawPrints, { PawIcon } from "@/components/paw-prints";
+import PawPrints from "@/components/paw-prints";
 import { prisma } from "@/lib/prisma";
 
 const CATEGORY_TILES: { category: ProductCategory; label: string; Icon: LucideIcon; className: string; iconClassName: string }[] = [
@@ -47,7 +48,7 @@ export default async function HomePage() {
 
         <div className="relative mx-auto grid max-w-7xl gap-10 px-6 pt-4 pb-20 md:grid-cols-2 md:items-center md:pt-10">
           <div>
-            <PawIcon size={64} className="text-brand-orange" />
+            <Image src="/pets/paw.png" alt="" width={64} height={64} />
             <h1 className="mt-4 text-5xl font-extrabold text-brand-navy sm:text-6xl">Doggy&apos;s Shop</h1>
             <p className="mt-2 text-xl font-extrabold tracking-wide text-brand-orange uppercase">
               Pet food and accessories
