@@ -1,10 +1,12 @@
 @import "tailwindcss";
 
 @theme inline {
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --font-sans: var(--font-nunito);
 
-body {
-  font-family: Arial, Helvetica, sans-serif;
+  --color-brand-sky-light: #aee2fb;
+  --color-brand-sky-wave: #c5ebfc;
+  --color-brand-orange: #ff6b1a;
+  --color-brand-orange-hover: #e05508;
+  --color-brand-navy: #2c5f78;
+  --color-brand-house-red: #d34b3f;
 }
