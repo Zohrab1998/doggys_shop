@@ -1,17 +1,16 @@
 const POSITIONS = [
-  { top: "6%", left: "4%", size: 28, rotate: -18 },
-  { top: "14%", left: "46%", size: 20, rotate: 12 },
-  { top: "32%", left: "2%", size: 22, rotate: 24 },
-  { top: "46%", left: "41%", size: 26, rotate: -8 },
-  { top: "58%", left: "10%", size: 18, rotate: 30 },
-  { top: "70%", left: "48%", size: 24, rotate: -22 },
-  { top: "10%", left: "90%", size: 22, rotate: 16 },
-  { top: "55%", left: "93%", size: 20, rotate: -14 },
+  { top: "20%", left: "48%", size: 34 },
+  { top: "28%", left: "44%", size: 22 },
+  { top: "38%", left: "38%", size: 20 },
+  { top: "52%", left: "36%", size: 26 },
+  { top: "68%", left: "33%", size: 20 },
+  { top: "80%", left: "30%", size: 24 },
+  { top: "92%", left: "27%", size: 18 },
 ];
 
-function PawIcon({ size }: { size: number }) {
+export function PawIcon({ size, className }: { size: number; className?: string }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className}>
       <circle cx="12" cy="16" r="5" />
       <circle cx="4.5" cy="10" r="2.4" />
       <circle cx="9.5" cy="5.5" r="2.4" />
@@ -23,13 +22,9 @@ function PawIcon({ size }: { size: number }) {
 
 export default function PawPrints() {
   return (
-    <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden text-brand-orange/20">
+    <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden text-brand-orange">
       {POSITIONS.map((p, i) => (
-        <span
-          key={i}
-          className="absolute"
-          style={{ top: p.top, left: p.left, transform: `rotate(${p.rotate}deg)` }}
-        >
+        <span key={i} className="absolute" style={{ top: p.top, left: p.left }}>
           <PawIcon size={p.size} />
         </span>
       ))}
