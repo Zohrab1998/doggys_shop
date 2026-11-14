@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme inline {
-  --font-sans: var(--font-nunito);
+  --font-sans: var(--font-nunito), var(--font-armenian), sans-serif;
 
   /* Colors taken from the Doggy's Shop logo. */
   --color-brand-orange: #f4821f;

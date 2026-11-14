@@ -50,6 +50,13 @@ npm run make-admin -- owner@example.com
 
 Sign out and back in, and a gear icon appears in the header.
 
+## Languages
+
+The storefront is in English (default), Armenian and Russian; visitors switch with the
+EN / ՀԱՅ / РУ buttons in the header. All texts live in `src/i18n/` (`en.ts`, `hy.ts`, `ru.ts`
+— same keys in each). Product names and descriptions are shown as typed in the admin page
+(English for now), and the admin area itself is in English.
+
 ## Delivery rule
 
 `src/lib/delivery.ts` holds the rule in one place: delivery within Yerevan only, free, with a
@@ -77,4 +84,3 @@ Sign out and back in, and a gear icon appears in the header.
 
 - Real product photos (upload them from the admin page)
 - Grooming appointment booking (minimum 2 days lead time)
-- Armenian / Russian translations

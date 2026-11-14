@@ -2,6 +2,8 @@ import { AnimalType, ProductCategory, type Prisma } from "@prisma/client";
 import Link from "next/link";
 import { Suspense } from "react";
 import ProductCard from "@/components/product-card";
+import { fmt } from "@/i18n/config";
+import { getI18n } from "@/i18n/server";
 import { prisma } from "@/lib/prisma";
 import FilterSidebar from "./filter-sidebar";
 import ShopBanner from "./shop-banner";
@@ -27,6 +29,7 @@ export default async function ShopPage({
   searchParams: Promise<SearchParams>;
 }) {
   const params = await searchParams;
+  const { m } = await getI18n();
 
   const animalTypeRaw = firstValue(params.animalType);
   const categoryRaw = firstValue(params.category);
@@ -109,19 +112,18 @@ export default async function ShopPage({
         </Suspense>
         <div>
           <p className="mb-4 text-sm text-brand-navy/70">
-            {total} {total === 1 ? "product" : "products"}
+            {fmt(m.shop.count, { count: total })}
             {q ? (
               <>
-                {" "}
-                for “<span className="font-bold">{q}</span>”
+                {" · "}“<span className="font-bold">{q}</span>”
               </>
             ) : null}
           </p>
           {products.length === 0 ? (
             <div className="rounded-2xl bg-white/70 p-10 text-center text-brand-navy/70">
-              No products match these filters.{" "}
+              {m.shop.noMatch}{" "}
               <Link href="/shop" className="font-bold text-brand-orange hover:underline">
-                Clear filters
+                {m.shop.clear}
               </Link>
             </div>
           ) : (
@@ -133,7 +135,7 @@ export default async function ShopPage({
           )}
 
           {pageCount > 1 ? (
-            <nav aria-label="Pages" className="mt-8 flex flex-wrap items-center justify-center gap-2">
+            <nav aria-label={m.shop.pages} className="mt-8 flex flex-wrap items-center justify-center gap-2">
               {Array.from({ length: pageCount }, (_, i) => i + 1).map((n) => (
                 <Link
                   key={n}

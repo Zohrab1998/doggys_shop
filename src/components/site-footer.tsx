@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { fmt } from "@/i18n/config";
+import { getI18n } from "@/i18n/server";
 import { formatPrice } from "@/lib/catalog";
-import { DELIVERY_AREA, MIN_ORDER_AMD } from "@/lib/delivery";
+import { MIN_ORDER_AMD } from "@/lib/delivery";
 
 function InstagramIcon() {
   return (
@@ -28,43 +30,44 @@ function TwitterIcon() {
   );
 }
 
-export default function SiteFooter() {
+export default async function SiteFooter() {
+  const { m } = await getI18n();
   return (
     <footer className="relative z-10 mt-16 bg-brand-navy text-sky-100">
       <div className="mx-auto grid max-w-7xl gap-8 px-6 py-10 sm:grid-cols-3">
         <div>
           <p className="text-lg font-extrabold text-white">Doggy&apos;s Shop</p>
           <p className="mt-2 text-sm text-sky-100/70">
-            Curated supplies, nutrition, and care for dogs, cats, birds, and hamsters.
+            {m.footer.tagline}
           </p>
           <p className="mt-2 text-sm text-sky-100/70">
-            Free delivery in {DELIVERY_AREA} on orders from {formatPrice(MIN_ORDER_AMD)}.
+            {fmt(m.delivery.bar, { min: formatPrice(MIN_ORDER_AMD) })}
           </p>
         </div>
 
         <div>
-          <p className="text-sm font-bold uppercase tracking-widest text-sky-100/80">Quick Links</p>
+          <p className="text-sm font-bold uppercase tracking-widest text-sky-100/80">{m.footer.quickLinks}</p>
           <ul className="mt-3 space-y-2 text-sm">
             <li>
               <Link href="/shop" className="transition hover:text-orange-400">
-                Shop
+                {m.nav.shop}
               </Link>
             </li>
             <li>
               <Link href="/about" className="transition hover:text-orange-400">
-                About Us
+                {m.nav.about}
               </Link>
             </li>
             <li>
               <Link href="/contact" className="transition hover:text-orange-400">
-                Contact Us
+                {m.nav.contact}
               </Link>
             </li>
           </ul>
         </div>
 
         <div>
-          <p className="text-sm font-bold uppercase tracking-widest text-sky-100/80">Follow Us</p>
+          <p className="text-sm font-bold uppercase tracking-widest text-sky-100/80">{m.footer.followUs}</p>
           <div className="mt-3 flex gap-4">
             <span className="rounded-full bg-white/10 p-2 transition hover:bg-orange-500" title="Instagram">
               <InstagramIcon />
@@ -79,7 +82,7 @@ export default function SiteFooter() {
         </div>
       </div>
       <p className="border-t border-white/10 py-4 text-center text-xs text-sky-100/50">
-        © {new Date().getFullYear()} Doggy&apos;s Shop. All rights reserved.
+        © {new Date().getFullYear()} Doggy&apos;s Shop. {m.footer.rights}
       </p>
     </footer>
   );

@@ -1,19 +1,18 @@
+import { fmt } from "@/i18n/config";
+import { getI18n } from "@/i18n/server";
+import { formatPrice } from "@/lib/catalog";
+import { MIN_ORDER_AMD } from "@/lib/delivery";
+
 export const metadata = { title: "About Us — Doggy's Shop" };
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const { m } = await getI18n();
   return (
     <div className="mx-auto max-w-3xl px-6 py-16">
-      <h1 className="text-3xl font-bold text-slate-900">About Us</h1>
-      <p className="mt-4 text-slate-900/80">
-        Doggy&apos;s Shop is a Yerevan-based online pet store bringing together curated supplies,
-        nutrition, and expert care for dogs, cats, birds, and hamsters. We believe every pet
-        deserves a happy, healthy home — and every pet parent deserves a simple place to find
-        everything they need.
-      </p>
-      <p className="mt-4 text-slate-900/80">
-        We&apos;re just getting started: today you can browse our full catalogue by animal type,
-        category, brand, and price. Soon we&apos;ll be adding grooming appointment booking and
-        fast delivery across Yerevan.
+      <h1 className="text-3xl font-extrabold text-brand-navy">{m.about.title}</h1>
+      <p className="mt-4 leading-relaxed text-brand-navy/80">{m.about.p1}</p>
+      <p className="mt-4 leading-relaxed text-brand-navy/80">
+        {fmt(m.about.p2, { min: formatPrice(MIN_ORDER_AMD) })}
       </p>
     </div>
   );

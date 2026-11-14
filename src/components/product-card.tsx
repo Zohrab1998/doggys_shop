@@ -3,7 +3,8 @@ import Link from "next/link";
 import AddToCartButton from "@/components/add-to-cart-button";
 import ProductImage from "@/components/product-image";
 import { WishlistButton } from "@/components/wishlist";
-import { animalTheme, categoryLabel, formatPrice } from "@/lib/catalog";
+import { getI18n } from "@/i18n/server";
+import { animalTheme, formatPrice } from "@/lib/catalog";
 
 export type ProductCardData = {
   id: string;
@@ -16,7 +17,8 @@ export type ProductCardData = {
   inStock: boolean;
 };
 
-export default function ProductCard({ product }: { product: ProductCardData }) {
+export default async function ProductCard({ product }: { product: ProductCardData }) {
+  const { m } = await getI18n();
   const theme = animalTheme(product.animalType);
   return (
     <article className="group relative flex flex-col overflow-hidden rounded-2xl bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
@@ -31,11 +33,11 @@ export default function ProductCard({ product }: { product: ProductCardData }) {
           className="absolute top-2 left-2 rounded-full px-2.5 py-1 text-[11px] font-extrabold tracking-wide text-white uppercase"
           style={{ background: theme.main }}
         >
-          {categoryLabel(product.category)}
+          {m.categories[product.category].label}
         </span>
         {!product.inStock ? (
           <span className="absolute inset-x-0 bottom-0 bg-brand-navy/80 py-1 text-center text-xs font-bold text-white">
-            Out of stock
+            {m.shop.outOfStock}
           </span>
         ) : null}
       </Link>

@@ -1,6 +1,7 @@
 import type { AnimalType, ProductCategory } from "@prisma/client";
 import Link from "next/link";
 import AnimalArt from "@/components/animal-art";
+import { getI18n } from "@/i18n/server";
 import { ANIMAL_TYPE_OPTIONS, CATEGORY_OPTIONS, DEFAULT_THEME, animalOption } from "@/lib/catalog";
 
 function href(animalType?: AnimalType, category?: ProductCategory) {
@@ -15,13 +16,14 @@ function href(animalType?: AnimalType, category?: ProductCategory) {
  * Colored strip at the top of the shop. With an animal selected it takes that animal's color
  * and the mascot hops / runs / flies / rolls in from the right.
  */
-export default function ShopBanner({
+export default async function ShopBanner({
   animalType,
   category,
 }: {
   animalType?: AnimalType;
   category?: ProductCategory;
 }) {
+  const { m } = await getI18n();
   const animal = animalOption(animalType);
   const theme = animal?.theme ?? DEFAULT_THEME;
 
@@ -38,10 +40,10 @@ export default function ShopBanner({
         <div className="min-w-0 flex-1">
           <p className="text-xs font-bold tracking-[0.2em] text-white/80 uppercase">Doggy&apos;s Shop</p>
           <h1 className="mt-1 text-3xl font-extrabold sm:text-4xl">
-            {animal ? `Everything for ${animal.label}` : "Shop for every pet"}
+            {animal ? m.animals[animal.value].everything : m.shop.allTitle}
           </h1>
           <p className="mt-1 text-white/90">
-            {animal ? animal.tagline : "Pick your pet to see their corner of the shop."}
+            {animal ? m.animals[animal.value].tagline : m.shop.allTagline}
           </p>
 
           <div className="mt-4 flex flex-wrap gap-2">
@@ -57,7 +59,7 @@ export default function ShopBanner({
                       }`}
                       style={active ? { color: theme.dark } : undefined}
                     >
-                      {option.label}
+                      {m.categories[option.value].label}
                     </Link>
                   );
                 })
@@ -71,7 +73,7 @@ export default function ShopBanner({
                     <span className="flex h-8 w-8 items-end justify-center overflow-hidden rounded-full" style={{ background: option.theme.soft }}>
                       <AnimalArt animal={option.value} className="h-[85%] w-[85%]" />
                     </span>
-                    {option.label}
+                    {m.animals[option.value].label}
                   </Link>
                 ))}
           </div>
@@ -80,7 +82,7 @@ export default function ShopBanner({
         {animal ? (
           // `key` restarts the entrance animation whenever the selected animal changes.
           <div key={animal.value} className={`animal-enter-${animal.value} hidden w-36 shrink-0 self-end sm:block md:w-44`}>
-            <AnimalArt animal={animal.value} title={animal.singular} className="animal-bob -mb-6 w-full drop-shadow-lg" />
+            <AnimalArt animal={animal.value} title={m.animals[animal.value].label} className="animal-bob -mb-6 w-full drop-shadow-lg" />
           </div>
         ) : null}
       </div>

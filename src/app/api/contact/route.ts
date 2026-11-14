@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { getI18n } from "@/i18n/server";
 import { prisma } from "@/lib/prisma";
 
 const contactSchema = z.object({
@@ -9,15 +10,16 @@ const contactSchema = z.object({
 });
 
 export async function POST(req: Request) {
+  const { m } = await getI18n();
   const parsed = contactSchema.safeParse(await req.json());
   if (!parsed.success) {
     return NextResponse.json(
-      { ok: false, message: "Please fill in all fields with a valid email.", errors: parsed.error.flatten() },
+      { ok: false, message: m.contact.invalid, errors: parsed.error.flatten() },
       { status: 400 },
     );
   }
 
   await prisma.contactMessage.create({ data: parsed.data });
 
-  return NextResponse.json({ ok: true, message: "Thanks! We'll get back to you soon." }, { status: 201 });
+  return NextResponse.json({ ok: true, message: m.contact.thanks }, { status: 201 });
 }

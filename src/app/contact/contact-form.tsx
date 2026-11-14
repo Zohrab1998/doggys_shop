@@ -1,8 +1,10 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import { useI18n } from "@/i18n/client";
 
 export default function ContactForm() {
+  const { m } = useI18n();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
@@ -20,13 +22,13 @@ export default function ContactForm() {
         body: JSON.stringify({ name, email, message }),
       });
       const data = (await res.json()) as { ok: boolean; message?: string };
-      if (!res.ok || !data.ok) throw new Error(data.message ?? "Something went wrong.");
-      setStatus(data.message ?? "Thanks! We'll get back to you soon.");
+      if (!res.ok || !data.ok) throw new Error(data.message ?? m.contact.failed);
+      setStatus(data.message ?? m.contact.thanks);
       setName("");
       setEmail("");
       setMessage("");
     } catch (error) {
-      setStatus(error instanceof Error ? error.message : "Something went wrong.");
+      setStatus(error instanceof Error ? error.message : m.contact.failed);
     } finally {
       setSubmitting(false);
     }
@@ -38,11 +40,11 @@ export default function ContactForm() {
   return (
     <form onSubmit={onSubmit} className="mt-6 space-y-4">
       <div>
-        <label className="text-xs font-semibold uppercase tracking-wider text-slate-900/60">Name</label>
+        <label className="text-xs font-semibold uppercase tracking-wider text-slate-900/60">{m.contact.name}</label>
         <input required className={fieldClass} value={name} onChange={(e) => setName(e.target.value)} />
       </div>
       <div>
-        <label className="text-xs font-semibold uppercase tracking-wider text-slate-900/60">Email</label>
+        <label className="text-xs font-semibold uppercase tracking-wider text-slate-900/60">{m.contact.email}</label>
         <input
           required
           type="email"
@@ -52,7 +54,7 @@ export default function ContactForm() {
         />
       </div>
       <div>
-        <label className="text-xs font-semibold uppercase tracking-wider text-slate-900/60">Message</label>
+        <label className="text-xs font-semibold uppercase tracking-wider text-slate-900/60">{m.contact.message}</label>
         <textarea
           required
           rows={5}
@@ -66,7 +68,7 @@ export default function ContactForm() {
         disabled={submitting}
         className="rounded-full bg-orange-500 px-6 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
       >
-        {submitting ? "Sending…" : "Send message"}
+        {submitting ? m.contact.sending : m.contact.send}
       </button>
       {status ? <p className="text-sm text-slate-900/80">{status}</p> : null}
     </form>

@@ -4,12 +4,14 @@ import { Heart, LogOut, Settings, ShoppingCart, User } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useI18n } from "@/i18n/client";
 
 const iconButton =
   "relative flex h-10 w-10 items-center justify-center rounded-full text-brand-navy transition hover:bg-brand-sky hover:text-brand-orange";
 
 export default function AccountCartMenu() {
   const { data: session, status } = useSession();
+  const { m } = useI18n();
   const [cartCount, setCartCount] = useState<number | null>(null);
 
   useEffect(() => {
@@ -35,7 +37,7 @@ export default function AccountCartMenu() {
   return (
     <div className="flex items-center gap-1">
       {signedIn && session.user.isAdmin ? (
-        <Link href="/admin" className={iconButton} aria-label="Admin" title="Admin">
+        <Link href="/admin" className={iconButton} aria-label={m.nav.admin} title={m.nav.admin}>
           <Settings className="h-5 w-5" />
         </Link>
       ) : null}
@@ -43,19 +45,19 @@ export default function AccountCartMenu() {
       <Link
         href={signedIn ? "/account" : "/signin"}
         className={iconButton}
-        aria-label={signedIn ? "My account" : "Sign in"}
-        title={signedIn ? (session.user?.name ?? "My account") : "Sign in"}
+        aria-label={signedIn ? m.nav.account : m.nav.signIn}
+        title={signedIn ? (session.user?.name ?? m.nav.account) : m.nav.signIn}
       >
         <User className="h-5 w-5" />
       </Link>
 
       {signedIn ? (
-        <Link href="/wishlist" className={iconButton} aria-label="Wishlist" title="Wishlist">
+        <Link href="/wishlist" className={iconButton} aria-label={m.nav.wishlist} title={m.nav.wishlist}>
           <Heart className="h-5 w-5" />
         </Link>
       ) : null}
 
-      <Link href="/cart" className={iconButton} aria-label="Cart" title="Cart">
+      <Link href="/cart" className={iconButton} aria-label={m.nav.cart} title={m.nav.cart}>
         <ShoppingCart className="h-5 w-5" />
         {cartCount ? (
           <span className="absolute -top-0.5 -right-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-brand-orange px-1 text-[11px] font-extrabold text-white">
@@ -69,8 +71,8 @@ export default function AccountCartMenu() {
           type="button"
           onClick={() => signOut({ callbackUrl: "/" })}
           className={iconButton}
-          aria-label="Sign out"
-          title="Sign out"
+          aria-label={m.nav.signOut}
+          title={m.nav.signOut}
         >
           <LogOut className="h-5 w-5" />
         </button>

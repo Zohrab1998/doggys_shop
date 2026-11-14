@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { randomUUID } from "node:crypto";
 import { getCartOwner } from "@/lib/cart-owner";
+import { fmt } from "@/i18n/config";
+import { getI18n } from "@/i18n/server";
 import { formatPrice } from "@/lib/catalog";
 import { DELIVERY_AREA, MIN_ORDER_AMD, quoteDelivery } from "@/lib/delivery";
 import { prisma } from "@/lib/prisma";
@@ -17,19 +19,20 @@ const checkoutSchema = z.object({
 
 export async function POST(req: Request) {
   try {
+    const { m } = await getI18n();
     const owner = await getCartOwner();
     if (!owner) {
-      return NextResponse.json({ ok: false, message: "Your cart is empty." }, { status: 400 });
+      return NextResponse.json({ ok: false, message: m.cart.empty }, { status: 400 });
     }
     const parsed = checkoutSchema.safeParse(await req.json());
     if (!parsed.success) {
-      return NextResponse.json({ ok: false, message: "Please provide a delivery address and phone." }, { status: 400 });
+      return NextResponse.json({ ok: false, message: m.cart.needAddress }, { status: 400 });
     }
 
     const customerName = owner.kind === "user" ? owner.user.name : parsed.data.name;
     const customerEmail = owner.kind === "user" ? owner.user.email : parsed.data.email;
     if (owner.kind === "guest" && (!customerName || !customerEmail)) {
-      return NextResponse.json({ ok: false, message: "Please enter your name and email." }, { status: 400 });
+      return NextResponse.json({ ok: false, message: m.cart.needContact }, { status: 400 });
     }
 
     const cartItems = await prisma.cartItem.findMany({
@@ -38,13 +41,13 @@ export async function POST(req: Request) {
     });
 
     if (cartItems.length === 0) {
-      return NextResponse.json({ ok: false, message: "Your cart is empty." }, { status: 400 });
+      return NextResponse.json({ ok: false, message: m.cart.empty }, { status: 400 });
     }
 
     const unavailable = cartItems.find((item) => !item.product.inStock);
     if (unavailable) {
       return NextResponse.json(
-        { ok: false, message: `"${unavailable.product.name}" is out of stock — please remove it from your cart.` },
+        { ok: false, message: fmt(m.cart.outOfStockError, { name: unavailable.product.name }) },
         { status: 400 },
       );
     }
@@ -55,7 +58,10 @@ export async function POST(req: Request) {
       return NextResponse.json(
         {
           ok: false,
-          message: `The minimum order is ${formatPrice(MIN_ORDER_AMD)}. Add ${formatPrice(delivery.remainingAmd)} more to check out.`,
+          message: fmt(m.cart.minOrderError, {
+            min: formatPrice(MIN_ORDER_AMD),
+            amount: formatPrice(delivery.remainingAmd),
+          }),
         },
         { status: 400 },
       );
@@ -132,7 +138,8 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ ok: true, checkoutUrl: session.url });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to start checkout.";
-    return NextResponse.json({ ok: false, message }, { status: 500 });
+    // Details go to the server log; customers get a plain message.
+    console.error("[checkout] failed", error);
+    return NextResponse.json({ ok: false, message: (await getI18n()).m.cart.checkoutFailed }, { status: 500 });
   }
 }

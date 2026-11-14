@@ -3,9 +3,11 @@
 import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { FormEvent, useState } from "react";
+import { useI18n } from "@/i18n/client";
 
 export default function SignUpForm() {
   const searchParams = useSearchParams();
+  const { m } = useI18n();
   const callbackUrl = searchParams.get("callbackUrl") ?? "/";
 
   const [name, setName] = useState("");
@@ -25,16 +27,16 @@ export default function SignUpForm() {
         body: JSON.stringify({ name, email, password }),
       });
       const data = (await res.json()) as { ok: boolean; message?: string };
-      if (!res.ok || !data.ok) throw new Error(data.message ?? "Could not create account.");
+      if (!res.ok || !data.ok) throw new Error(data.message ?? m.auth.createFailed);
 
       const signInResult = await signIn("credentials", { email, password, redirect: false });
       if (signInResult?.error) {
-        setMessage("Account created — please sign in.");
+        setMessage(m.auth.created);
         return;
       }
       window.location.href = callbackUrl;
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Could not create account.");
+      setMessage(error instanceof Error ? error.message : m.auth.createFailed);
     } finally {
       setSubmitting(false);
     }
@@ -50,20 +52,20 @@ export default function SignUpForm() {
         onClick={() => signIn("google", { callbackUrl })}
         className="flex w-full items-center justify-center gap-2 rounded-full border border-brand-navy/15 bg-white py-2.5 text-sm font-bold text-brand-navy transition hover:bg-brand-sky-light"
       >
-        Continue with Google
+        {m.auth.google}
       </button>
 
       <div className="my-5 flex items-center gap-3 text-xs font-semibold text-brand-navy/40 uppercase">
-        <span className="h-px flex-1 bg-brand-navy/10" /> or <span className="h-px flex-1 bg-brand-navy/10" />
+        <span className="h-px flex-1 bg-brand-navy/10" /> {m.auth.or} <span className="h-px flex-1 bg-brand-navy/10" />
       </div>
 
       <form onSubmit={onSubmit} className="space-y-4">
         <div>
-          <label className="text-xs font-semibold tracking-wider text-brand-navy/60 uppercase">Name</label>
+          <label className="text-xs font-semibold tracking-wider text-brand-navy/60 uppercase">{m.auth.name}</label>
           <input required className={fieldClass} value={name} onChange={(e) => setName(e.target.value)} />
         </div>
         <div>
-          <label className="text-xs font-semibold tracking-wider text-brand-navy/60 uppercase">Email</label>
+          <label className="text-xs font-semibold tracking-wider text-brand-navy/60 uppercase">{m.auth.email}</label>
           <input
             required
             type="email"
@@ -73,7 +75,7 @@ export default function SignUpForm() {
           />
         </div>
         <div>
-          <label className="text-xs font-semibold tracking-wider text-brand-navy/60 uppercase">Password</label>
+          <label className="text-xs font-semibold tracking-wider text-brand-navy/60 uppercase">{m.auth.password}</label>
           <input
             required
             type="password"
@@ -88,15 +90,15 @@ export default function SignUpForm() {
           disabled={submitting}
           className="w-full rounded-full bg-brand-orange py-2.5 text-sm font-bold text-white transition hover:bg-brand-orange-hover disabled:opacity-60"
         >
-          {submitting ? "Creating account…" : "Create account"}
+          {submitting ? m.auth.creating : m.auth.create}
         </button>
         {message ? <p className="text-sm text-brand-navy/80">{message}</p> : null}
       </form>
 
       <p className="mt-4 text-sm text-brand-navy/60">
-        Already have an account?{" "}
+        {m.auth.haveAccount}{" "}
         <a href={`/signin?callbackUrl=${encodeURIComponent(callbackUrl)}`} className="font-bold text-brand-orange hover:underline">
-          Sign in
+          {m.auth.signIn}
         </a>
       </p>
     </div>

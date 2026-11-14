@@ -3,8 +3,10 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import ProductImage from "@/components/product-image";
+import { useI18n } from "@/i18n/client";
+import { fmt } from "@/i18n/config";
 import { formatPrice } from "@/lib/catalog";
-import { DELIVERY_AREA, MIN_ORDER_AMD, quoteDelivery } from "@/lib/delivery";
+import { MIN_ORDER_AMD, quoteDelivery } from "@/lib/delivery";
 
 type CartItem = {
   id: string;
@@ -20,6 +22,7 @@ type CartItem = {
 };
 
 export default function CartClient({ isGuest }: { isGuest: boolean }) {
+  const { m } = useI18n();
   const [items, setItems] = useState<CartItem[] | null>(null);
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
@@ -59,11 +62,11 @@ export default function CartClient({ isGuest }: { isGuest: boolean }) {
 
   async function onCheckout() {
     if (!address.trim() || !phone.trim()) {
-      setMessage("Please add a delivery address and phone number.");
+      setMessage(m.cart.needAddress);
       return;
     }
     if (isGuest && (!name.trim() || !email.trim())) {
-      setMessage("Please enter your name and email so we can confirm your order.");
+      setMessage(m.cart.needContact);
       return;
     }
     setCheckingOut(true);
@@ -76,25 +79,25 @@ export default function CartClient({ isGuest }: { isGuest: boolean }) {
       });
       const data = (await res.json()) as { ok: boolean; checkoutUrl?: string; message?: string };
       if (!res.ok || !data.ok || !data.checkoutUrl) {
-        throw new Error(data.message ?? "Could not start checkout.");
+        throw new Error(data.message ?? m.cart.checkoutFailed);
       }
       window.location.href = data.checkoutUrl;
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Could not start checkout.");
+      setMessage(error instanceof Error ? error.message : m.cart.checkoutFailed);
       setCheckingOut(false);
     }
   }
 
   if (items === null) {
-    return <p className="mt-8 text-brand-navy/60">Loading…</p>;
+    return <p className="mt-8 text-brand-navy/60">{m.cart.loading}</p>;
   }
 
   if (items.length === 0) {
     return (
       <div className="mt-8">
-        <p className="text-brand-navy/60">Your cart is empty.</p>
+        <p className="text-brand-navy/60">{m.cart.empty}</p>
         <Link href="/shop" className="mt-4 inline-block font-bold text-brand-orange hover:underline">
-          Browse the shop →
+          {m.cart.browse}
         </Link>
       </div>
     );
@@ -142,7 +145,7 @@ export default function CartClient({ isGuest }: { isGuest: boolean }) {
             onClick={() => removeItem(item.product.id)}
             className="text-sm font-medium text-red-600 hover:underline"
           >
-            Remove
+            {m.cart.remove}
           </button>
         </div>
       ))}
@@ -153,9 +156,12 @@ export default function CartClient({ isGuest }: { isGuest: boolean }) {
           <p className="text-sm font-bold text-brand-navy">
             {delivery.remainingAmd > 0
               ? delivery.allowed
-                ? `Add ${formatPrice(delivery.remainingAmd)} more for free delivery in ${DELIVERY_AREA}.`
-                : `Add ${formatPrice(delivery.remainingAmd)} more to reach the ${formatPrice(MIN_ORDER_AMD)} minimum order.`
-              : `🎉 You get free delivery in ${DELIVERY_AREA}!`}
+                ? fmt(m.cart.addMoreFree, { amount: formatPrice(delivery.remainingAmd) })
+                : fmt(m.cart.addMoreMin, {
+                    amount: formatPrice(delivery.remainingAmd),
+                    min: formatPrice(MIN_ORDER_AMD),
+                  })
+              : m.cart.freeYes}
           </p>
           <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-white">
             <div
@@ -167,15 +173,15 @@ export default function CartClient({ isGuest }: { isGuest: boolean }) {
 
         <dl className="mt-5 space-y-1.5 text-brand-navy">
           <div className="flex items-center justify-between">
-            <dt>Subtotal</dt>
+            <dt>{m.cart.subtotal}</dt>
             <dd>{formatPrice(subtotal)}</dd>
           </div>
           <div className="flex items-center justify-between">
-            <dt>Delivery ({DELIVERY_AREA})</dt>
-            <dd>{delivery.feeAmd > 0 ? formatPrice(delivery.feeAmd) : delivery.allowed ? "Free" : "—"}</dd>
+            <dt>{m.cart.delivery}</dt>
+            <dd>{delivery.feeAmd > 0 ? formatPrice(delivery.feeAmd) : delivery.allowed ? m.cart.free : "—"}</dd>
           </div>
           <div className="flex items-center justify-between border-t border-brand-sky pt-2 text-lg font-extrabold">
-            <dt>Total</dt>
+            <dt>{m.cart.total}</dt>
             <dd>{formatPrice(delivery.totalAmd)}</dd>
           </div>
         </dl>
@@ -184,16 +190,16 @@ export default function CartClient({ isGuest }: { isGuest: boolean }) {
           {isGuest ? (
             <>
               <p className="rounded-xl bg-brand-sky p-3 text-sm text-brand-navy">
-                Checking out as a guest — no account needed.{" "}
+                {m.cart.guestBefore}
                 <Link href="/signin?callbackUrl=/cart" className="font-bold text-brand-orange hover:underline">
-                  Sign in
-                </Link>{" "}
-                if you have one, to keep your order history.
+                  {m.cart.guestLink}
+                </Link>
+                {m.cart.guestAfter}
               </p>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div>
                   <label htmlFor="guest-name" className="text-xs font-semibold tracking-wider text-brand-navy/60 uppercase">
-                    Your name
+                    {m.cart.name}
                   </label>
                   <input
                     id="guest-name"
@@ -205,7 +211,7 @@ export default function CartClient({ isGuest }: { isGuest: boolean }) {
                 </div>
                 <div>
                   <label htmlFor="guest-email" className="text-xs font-semibold tracking-wider text-brand-navy/60 uppercase">
-                    Email
+                    {m.cart.email}
                   </label>
                   <input
                     id="guest-email"
@@ -221,17 +227,17 @@ export default function CartClient({ isGuest }: { isGuest: boolean }) {
           ) : null}
           <div>
             <label className="text-xs font-semibold tracking-wider text-brand-navy/60 uppercase">
-              Delivery address (Yerevan)
+              {m.cart.address}
             </label>
             <input
               className="mt-1 w-full rounded-xl border border-sky-500/20 bg-white px-4 py-2.5 text-sm outline-none focus:border-sky-500"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              placeholder="Street, building, apartment"
+              placeholder={m.cart.addressPlaceholder}
             />
           </div>
           <div>
-            <label className="text-xs font-semibold tracking-wider text-brand-navy/60 uppercase">Phone</label>
+            <label className="text-xs font-semibold tracking-wider text-brand-navy/60 uppercase">{m.cart.phone}</label>
             <input
               className="mt-1 w-full rounded-xl border border-sky-500/20 bg-white px-4 py-2.5 text-sm outline-none focus:border-sky-500"
               value={phone}
@@ -248,10 +254,10 @@ export default function CartClient({ isGuest }: { isGuest: boolean }) {
           className="mt-5 w-full rounded-full bg-brand-orange py-3 font-bold text-white transition hover:bg-brand-orange-hover disabled:cursor-not-allowed disabled:opacity-50"
         >
           {checkingOut
-            ? "Redirecting to payment…"
+            ? m.cart.redirecting
             : delivery.allowed
-              ? "Proceed to payment"
-              : `Minimum order ${formatPrice(MIN_ORDER_AMD)}`}
+              ? m.cart.pay
+              : fmt(m.cart.minOrder, { min: formatPrice(MIN_ORDER_AMD) })}
         </button>
         {message ? <p className="mt-2 text-sm text-red-600">{message}</p> : null}
       </div>

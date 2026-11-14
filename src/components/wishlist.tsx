@@ -4,6 +4,7 @@ import { Heart } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useI18n } from "@/i18n/client";
 
 type WishlistContextValue = {
   has: (productId: string) => boolean;
@@ -66,6 +67,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
 
 export function WishlistButton({ productId, className = "" }: { productId: string; className?: string }) {
   const { has, toggle } = useContext(WishlistContext);
+  const { m } = useI18n();
   const saved = has(productId);
 
   return (
@@ -73,8 +75,8 @@ export function WishlistButton({ productId, className = "" }: { productId: strin
       type="button"
       onClick={() => void toggle(productId)}
       aria-pressed={saved}
-      aria-label={saved ? "Remove from wishlist" : "Add to wishlist"}
-      title={saved ? "Remove from wishlist" : "Add to wishlist"}
+      aria-label={saved ? m.shop.wishRemove : m.shop.wishAdd}
+      title={saved ? m.shop.wishRemove : m.shop.wishAdd}
       className={`flex h-9 w-9 items-center justify-center rounded-full bg-white/90 shadow transition hover:scale-110 ${
         saved ? "text-red-500" : "text-brand-navy/60 hover:text-red-500"
       } ${className}`}

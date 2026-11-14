@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useI18n } from "@/i18n/client";
 
 export default function AddToCartButton({
   productId,
@@ -14,6 +15,7 @@ export default function AddToCartButton({
   disabled?: boolean;
   className?: string;
 }) {
+  const { m } = useI18n();
   const [busy, setBusy] = useState(false);
   const [added, setAdded] = useState(false);
 
@@ -43,7 +45,7 @@ export default function AddToCartButton({
       style={{ background: color ?? "var(--color-brand-orange)" }}
       className={`mt-2 rounded-full px-4 py-2 text-xs font-bold tracking-wide text-white uppercase transition hover:brightness-90 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
     >
-      {disabled ? "Out of stock" : added ? "Added ✓" : busy ? "Adding…" : "Add to cart"}
+      {disabled ? m.shop.outOfStock : added ? m.shop.added : busy ? m.shop.adding : m.shop.addToCart}
     </button>
   );
 }

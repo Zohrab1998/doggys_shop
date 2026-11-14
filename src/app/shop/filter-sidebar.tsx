@@ -3,6 +3,7 @@
 import { SlidersHorizontal } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
+import { useI18n } from "@/i18n/client";
 import { ANIMAL_TYPE_OPTIONS, CATEGORY_OPTIONS } from "@/lib/catalog";
 
 type Brand = { id: string; name: string };
@@ -24,6 +25,7 @@ export default function FilterSidebar({
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { m } = useI18n();
   // Collapsed by default on phones so products are visible straight away.
   const [openOnMobile, setOpenOnMobile] = useState(false);
 
@@ -59,14 +61,14 @@ export default function FilterSidebar({
       >
         <span className="flex items-center gap-2">
           <SlidersHorizontal className="h-4 w-4" />
-          Filters{activeCount ? ` (${activeCount})` : ""}
+          {m.shop.filters}{activeCount ? ` (${activeCount})` : ""}
         </span>
         <span className="lg:hidden">{openOnMobile ? "−" : "+"}</span>
       </button>
 
       <div className={`mt-5 space-y-6 ${openOnMobile ? "block" : "hidden"} lg:block`}>
         <div>
-          <p className={groupTitle}>Animal</p>
+          <p className={groupTitle}>{m.shop.animal}</p>
           <div className="mt-2 space-y-1.5">
             {ANIMAL_TYPE_OPTIONS.map((option) => (
               <label key={option.value} className={optionClass}>
@@ -77,14 +79,14 @@ export default function FilterSidebar({
                   style={{ accentColor: option.theme.main }}
                 />
                 <span className="h-2.5 w-2.5 rounded-full" style={{ background: option.theme.main }} />
-                {option.label}
+                {m.animals[option.value].label}
               </label>
             ))}
           </div>
         </div>
 
         <div>
-          <p className={groupTitle}>Category</p>
+          <p className={groupTitle}>{m.shop.category}</p>
           <div className="mt-2 space-y-1.5">
             {CATEGORY_OPTIONS.map((option) => (
               <label key={option.value} className={optionClass}>
@@ -93,7 +95,7 @@ export default function FilterSidebar({
                   checked={selected.category === option.value}
                   onChange={() => toggleValue("category", option.value)}
                 />
-                {option.label}
+                {m.categories[option.value].label}
               </label>
             ))}
           </div>
@@ -101,7 +103,7 @@ export default function FilterSidebar({
 
         {brands.length > 0 ? (
           <div>
-            <p className={groupTitle}>Brand</p>
+            <p className={groupTitle}>{m.shop.brand}</p>
             <div className="mt-2 space-y-1.5">
               {brands.map((brand) => (
                 <label key={brand.id} className={optionClass}>
@@ -118,14 +120,14 @@ export default function FilterSidebar({
         ) : null}
 
         <div>
-          <p className={groupTitle}>Price range (AMD)</p>
+          <p className={groupTitle}>{m.shop.price}</p>
           {/* `key` resets the uncontrolled inputs when filters are cleared. */}
           <div key={`${selected.priceMin}-${selected.priceMax}`} className="mt-2 flex items-center gap-2">
             <input
               type="number"
               min={0}
-              placeholder="Min"
-              aria-label="Minimum price"
+              placeholder={m.shop.min}
+              aria-label={m.shop.min}
               className={inputClass}
               defaultValue={selected.priceMin ?? ""}
               onBlur={(e) => updateParam("priceMin", e.target.value || null)}
@@ -134,8 +136,8 @@ export default function FilterSidebar({
             <input
               type="number"
               min={0}
-              placeholder="Max"
-              aria-label="Maximum price"
+              placeholder={m.shop.max}
+              aria-label={m.shop.max}
               className={inputClass}
               defaultValue={selected.priceMax ?? ""}
               onBlur={(e) => updateParam("priceMax", e.target.value || null)}
@@ -148,7 +150,7 @@ export default function FilterSidebar({
           onClick={() => router.push("/shop")}
           className="text-sm font-bold text-brand-orange hover:underline"
         >
-          Clear all filters
+          {m.shop.clearAll}
         </button>
       </div>
     </aside>

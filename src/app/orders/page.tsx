@@ -1,25 +1,21 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import ReorderButton from "@/components/reorder-button";
+import { fmt } from "@/i18n/config";
+import { getI18n } from "@/i18n/server";
 import { formatPrice } from "@/lib/catalog";
 import { getSessionUser } from "@/lib/authz";
 import { prisma } from "@/lib/prisma";
 
 export const metadata = { title: "Your Orders — Doggy's Shop" };
 
-const STATUS_LABEL: Record<string, string> = {
-  PENDING_PAYMENT: "Awaiting payment",
-  PAID: "Paid",
-  SHIPPED: "Shipped",
-  DELIVERED: "Delivered",
-  CANCELLED: "Cancelled",
-};
-
 export default async function OrdersPage() {
   const user = await getSessionUser();
   if (!user) {
     redirect("/signin?callbackUrl=/orders");
   }
+
+  const { m } = await getI18n();
 
   const orders = await prisma.order.findMany({
     where: { userId: user.id },
@@ -29,13 +25,13 @@ export default async function OrdersPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-14">
-      <h1 className="text-3xl font-bold text-brand-navy">Your Orders</h1>
+      <h1 className="text-3xl font-bold text-brand-navy">{m.orders.title}</h1>
 
       {orders.length === 0 ? (
         <p className="mt-6 text-brand-navy/60">
-          No orders yet.{" "}
+          {m.orders.none}{" "}
           <Link href="/shop" className="font-bold text-brand-orange hover:underline">
-            Start shopping →
+            {m.orders.start}
           </Link>
         </p>
       ) : (
@@ -44,9 +40,9 @@ export default async function OrdersPage() {
             <div key={order.id} className="rounded-2xl bg-white p-5 shadow-sm transition hover:shadow-md">
               <Link href={`/orders/${order.id}`} className="block">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <p className="font-bold text-brand-navy">Order #{order.id.slice(0, 8)}</p>
+                  <p className="font-bold text-brand-navy">{fmt(m.orders.order, { id: order.id.slice(0, 8) })}</p>
                   <span className="rounded-full bg-brand-sky-light px-3 py-1 text-xs font-bold text-brand-navy uppercase">
-                    {STATUS_LABEL[order.status] ?? order.status}
+                    {m.orders[`status${order.status}`]}
                   </span>
                 </div>
                 <p className="mt-1 text-sm text-brand-navy/60">
