@@ -13,6 +13,26 @@
   --color-brand-sky-wave: #c9ecfc;
 }
 
+/* ===== Paw mouse cursor: orange paw everywhere, blue paw on things you can click.
+   Text fields keep the normal text cursor so typing stays precise. ===== */
+html {
+  cursor: url("/cursors/paw.png") 14 4, auto;
+}
+a,
+button,
+summary,
+label,
+select,
+[role="button"],
+input[type="checkbox"],
+input[type="radio"],
+input[type="file"] {
+  cursor: url("/cursors/paw-pointer.png") 14 4, pointer;
+}
+button:disabled {
+  cursor: not-allowed;
+}
+
 /* ===== Shop banner: each animal arrives in its own way, then gently bobs ===== */
 @keyframes cat-jump {
   0% { transform: translate(140%, 30%) rotate(-24deg); opacity: 0; }
@@ -50,11 +70,6 @@
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-5%); }
 }
-@keyframes paw-step {
-  0% { opacity: 0; transform: scale(0.4); }
-  60% { opacity: 1; transform: scale(1.15); }
-  100% { opacity: 1; transform: scale(1); }
-}
 @keyframes wing-flap {
   0%, 100% { transform: rotate(0deg); }
   50% { transform: rotate(-26deg); }
@@ -65,8 +80,6 @@
 .animal-enter-BIRD { animation: bird-fly 1.4s ease-out both; }
 .animal-enter-HAMSTER { animation: hamster-roll 1.3s cubic-bezier(0.2, 0.7, 0.3, 1) both; }
 .animal-bob { animation: animal-bob 3.2s ease-in-out 1.5s infinite; }
-
-.paw-step { animation: paw-step 0.45s ease-out both; }
 
 .animal-wing { transform-box: fill-box; }
 .animal-wing-left { transform-origin: 80% 10%; }
@@ -80,7 +93,6 @@
   .animal-enter-BIRD,
   .animal-enter-HAMSTER,
   .animal-bob,
-  .paw-step,
   .animal-wing {
     animation: none !important;
   }

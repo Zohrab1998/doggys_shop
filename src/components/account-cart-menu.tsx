@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { useI18n } from "@/i18n/client";
 
 const iconButton =
-  "relative flex h-10 w-10 items-center justify-center rounded-full text-brand-navy transition hover:bg-brand-sky hover:text-brand-orange";
+  "relative flex h-10 w-10 items-center justify-center rounded-full text-brand-navy transition hover:bg-white/70 hover:text-brand-orange";
 
 export default function AccountCartMenu() {
   const { data: session, status } = useSession();

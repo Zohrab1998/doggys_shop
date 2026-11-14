@@ -14,6 +14,8 @@ export const en = {
     contact: "Contact",
     searchPlaceholder: "Search products",
     search: "Search",
+    seeAll: "See all results",
+    noResults: "No products found",
     menu: "Menu",
     admin: "Admin",
     account: "My account",

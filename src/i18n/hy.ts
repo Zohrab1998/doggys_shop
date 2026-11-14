@@ -11,6 +11,8 @@ export const hy: Messages = {
     contact: "Կապ",
     searchPlaceholder: "Որոնել ապրանքներ",
     search: "Որոնել",
+    seeAll: "Տեսնել բոլոր արդյունքները",
+    noResults: "Ապրանքներ չեն գտնվել",
     menu: "Մենյու",
     admin: "Ադմին",
     account: "Իմ հաշիվը",

@@ -46,7 +46,7 @@ export default async function HomePage() {
   return (
     <div>
       {/* ===== HERO ===== */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-brand-sky-light via-brand-sky-wave to-brand-sky">
+      <section className="relative -mt-24 overflow-hidden bg-gradient-to-br from-brand-sky-light via-brand-sky-wave to-brand-sky pt-24">
         <HeroDecor badgeDelivery={m.home.perkDeliveryTitle} badgeCare={m.home.perkCareTitle} />
         <div className="relative mx-auto grid max-w-7xl gap-8 px-4 pt-10 pb-14 sm:px-6 lg:grid-cols-[1fr_1.15fr] lg:items-center lg:pt-14">
           <div>

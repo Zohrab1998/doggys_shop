@@ -11,6 +11,8 @@ export const ru: Messages = {
     contact: "Контакты",
     searchPlaceholder: "Поиск товаров",
     search: "Поиск",
+    seeAll: "Показать все результаты",
+    noResults: "Ничего не найдено",
     menu: "Меню",
     admin: "Админ",
     account: "Мой аккаунт",

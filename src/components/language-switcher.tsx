@@ -26,7 +26,7 @@ export default function LanguageSwitcher({ className = "" }: { className?: strin
   }
 
   return (
-    <div role="group" aria-label={m.nav.language} className={`flex items-center rounded-full bg-brand-sky p-0.5 ${className}`}>
+    <div role="group" aria-label={m.nav.language} className={`flex items-center rounded-full bg-white/70 p-0.5 ring-1 ring-brand-blue/15 ${className}`}>
       {LOCALES.map((code) => {
         const active = code === (pending ?? locale);
         return (
