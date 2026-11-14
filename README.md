@@ -6,7 +6,8 @@ Toys / Medicine / Food / Hygiene / Accessories sub-categories.
 - Next.js App Router + TypeScript + Tailwind
 - Postgres + Prisma
 - Built so far: Home, Shop (search, filters, per-animal colors and banner), product pages,
-  accounts, cart, Stripe checkout, order history, and an admin area for products and orders
+  cart and checkout with or without an account, wishlist, order history with "buy again", and
+  an owner-only admin area (sales dashboard, products, orders)
 
 ## Prerequisites
 
@@ -33,6 +34,10 @@ If `npm install` warns about packages with pending install scripts (`prisma`, et
 
 ## Admin (adding products)
 
+`/admin` is the owner's sales dashboard: revenue, orders and best sellers for any month, a
+12-month revenue chart, every transaction of the month, and a download for Excel. Only
+accounts marked as admin can open it.
+
 The shop owner manages the catalog at `/admin/products`: add, edit and delete products, set
 the price (AMD), description, animal, category, brand, stock status, and upload a photo.
 Orders are at `/admin/orders`.
@@ -58,11 +63,14 @@ Sign out and back in, and a gear icon appears in the header.
   colored banner with the animated animal; `[slug]/page.tsx` is the product page
 - `src/app/admin/` — admin area (`products/` and `orders/`); API under `src/app/api/admin/`
 - `src/app/cart/`, `src/app/api/checkout/` — cart and Stripe checkout
+- `src/app/wishlist/`, `src/components/wishlist.tsx` — saved products (signed-in customers)
+- `src/lib/cart-owner.ts` — account carts and guest carts (cookie-based)
+- `src/lib/reports.ts` — monthly sales figures for the dashboard
 - `src/lib/catalog.ts` — animals (labels and colors), categories, AMD price formatting
 - `src/lib/delivery.ts` — minimum order / delivery fee rule
 - `src/components/animal-art.tsx` — the four SVG mascots
 - `prisma/schema.prisma` — data models; `prisma/seed.ts` — starter catalog (35 products)
-- `public/logo.png` — the Doggy's Shop logo
+- `public/logo.png` — the Doggy's Shop logo; `public/hero/pets.jpg` — homepage photo
 - `design/` — reference mockups (not used at build time)
 
 ## Next phases (not built yet)

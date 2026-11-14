@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import ReorderButton from "@/components/reorder-button";
 import { formatPrice } from "@/lib/catalog";
 import { getSessionUser } from "@/lib/authz";
 import { prisma } from "@/lib/prisma";
@@ -40,23 +41,24 @@ export default async function OrdersPage() {
       ) : (
         <div className="mt-6 space-y-4">
           {orders.map((order) => (
-            <Link
-              key={order.id}
-              href={`/orders/${order.id}`}
-              className="block rounded-2xl bg-white p-5 shadow-sm transition hover:shadow-md"
-            >
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <p className="font-bold text-brand-navy">Order #{order.id.slice(0, 8)}</p>
-                <span className="rounded-full bg-brand-sky-light px-3 py-1 text-xs font-bold text-brand-navy uppercase">
-                  {STATUS_LABEL[order.status] ?? order.status}
-                </span>
+            <div key={order.id} className="rounded-2xl bg-white p-5 shadow-sm transition hover:shadow-md">
+              <Link href={`/orders/${order.id}`} className="block">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <p className="font-bold text-brand-navy">Order #{order.id.slice(0, 8)}</p>
+                  <span className="rounded-full bg-brand-sky-light px-3 py-1 text-xs font-bold text-brand-navy uppercase">
+                    {STATUS_LABEL[order.status] ?? order.status}
+                  </span>
+                </div>
+                <p className="mt-1 text-sm text-brand-navy/60">
+                  {order.items.map((item) => `${item.quantity} × ${item.productName}`).join(", ")}
+                </p>
+                <p className="mt-1 text-sm text-brand-navy/60">{order.createdAt.toLocaleDateString("en-GB")}</p>
+              </Link>
+              <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+                <p className="font-bold text-brand-navy">{formatPrice(order.totalAmd)}</p>
+                <ReorderButton orderId={order.id} />
               </div>
-              <p className="mt-1 text-sm text-brand-navy/60">
-                {order.items.length} item{order.items.length === 1 ? "" : "s"} ·{" "}
-                {order.createdAt.toLocaleDateString("en-GB")}
-              </p>
-              <p className="mt-2 font-bold text-brand-navy">{formatPrice(order.totalAmd)}</p>
-            </Link>
+            </div>
           ))}
         </div>
       )}

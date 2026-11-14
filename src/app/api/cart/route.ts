@@ -1,21 +1,26 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { AuthzError, requireUser } from "@/lib/authz";
+import { addToCart, getCartOwner, mergeGuestCartIntoUser } from "@/lib/cart-owner";
 import { prisma } from "@/lib/prisma";
 
 export async function GET() {
   try {
-    const user = await requireUser();
+    const owner = await getCartOwner();
+    if (!owner) {
+      return NextResponse.json({ ok: true, items: [], isGuest: true });
+    }
+    if (owner.kind === "user") {
+      await mergeGuestCartIntoUser(owner.user.id);
+    }
+
     const items = await prisma.cartItem.findMany({
-      where: { userId: user.id },
+      where: owner.where,
       orderBy: { createdAt: "asc" },
       include: { product: true },
     });
-    return NextResponse.json({ ok: true, items });
+    return NextResponse.json({ ok: true, items, isGuest: owner.kind === "guest" });
   } catch (error) {
-    if (error instanceof AuthzError) {
-      return NextResponse.json({ ok: false, message: error.message }, { status: error.status });
-    }
+    console.error("[cart] load failed", error);
     return NextResponse.json({ ok: false, message: "Failed to load cart." }, { status: 500 });
   }
 }
@@ -27,7 +32,6 @@ const addSchema = z.object({
 
 export async function POST(req: Request) {
   try {
-    const user = await requireUser();
     const parsed = addSchema.safeParse(await req.json());
     if (!parsed.success) {
       return NextResponse.json({ ok: false, message: "Invalid cart payload." }, { status: 400 });
@@ -41,29 +45,17 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: false, message: "This product is out of stock." }, { status: 409 });
     }
 
-    const existing = await prisma.cartItem.findUnique({
-      where: { userId_productId: { userId: user.id, productId: product.id } },
-    });
+    const owner = await getCartOwner({ create: true });
+    if (!owner) {
+      return NextResponse.json({ ok: false, message: "Could not open a cart." }, { status: 500 });
+    }
 
-    const item = existing
-      ? await prisma.cartItem.update({
-          where: { id: existing.id },
-          data: { quantity: existing.quantity + parsed.data.quantity },
-        })
-      : await prisma.cartItem.create({
-          data: { userId: user.id, productId: product.id, quantity: parsed.data.quantity },
-        });
-
-    const count = await prisma.cartItem.aggregate({
-      where: { userId: user.id },
-      _sum: { quantity: true },
-    });
+    const item = await addToCart(owner, product.id, parsed.data.quantity);
+    const count = await prisma.cartItem.aggregate({ where: owner.where, _sum: { quantity: true } });
 
     return NextResponse.json({ ok: true, item, cartCount: count._sum.quantity ?? 0 }, { status: 201 });
   } catch (error) {
-    if (error instanceof AuthzError) {
-      return NextResponse.json({ ok: false, message: error.message }, { status: error.status });
-    }
+    console.error("[cart] add failed", error);
     return NextResponse.json({ ok: false, message: "Failed to add to cart." }, { status: 500 });
   }
 }

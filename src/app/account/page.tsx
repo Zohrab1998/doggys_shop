@@ -23,6 +23,12 @@ export default async function AccountPage() {
       >
         View order history
       </Link>
+      <Link
+        href="/wishlist"
+        className="mt-4 ml-3 inline-block rounded-full border-2 border-brand-orange px-5 py-2 text-sm font-bold text-brand-orange transition hover:bg-brand-orange hover:text-white"
+      >
+        My wishlist
+      </Link>
     </div>
   );
 }

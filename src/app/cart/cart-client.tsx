@@ -19,10 +19,12 @@ type CartItem = {
   };
 };
 
-export default function CartClient() {
+export default function CartClient({ isGuest }: { isGuest: boolean }) {
   const [items, setItems] = useState<CartItem[] | null>(null);
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [message, setMessage] = useState<string | null>(null);
   const [checkingOut, setCheckingOut] = useState(false);
 
@@ -60,13 +62,17 @@ export default function CartClient() {
       setMessage("Please add a delivery address and phone number.");
       return;
     }
+    if (isGuest && (!name.trim() || !email.trim())) {
+      setMessage("Please enter your name and email so we can confirm your order.");
+      return;
+    }
     setCheckingOut(true);
     setMessage(null);
     try {
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ deliveryAddress: address, phone }),
+        body: JSON.stringify({ deliveryAddress: address, phone, name, email }),
       });
       const data = (await res.json()) as { ok: boolean; checkoutUrl?: string; message?: string };
       if (!res.ok || !data.ok || !data.checkoutUrl) {
@@ -175,6 +181,44 @@ export default function CartClient() {
         </dl>
 
         <div className="mt-5 space-y-3">
+          {isGuest ? (
+            <>
+              <p className="rounded-xl bg-brand-sky p-3 text-sm text-brand-navy">
+                Checking out as a guest — no account needed.{" "}
+                <Link href="/signin?callbackUrl=/cart" className="font-bold text-brand-orange hover:underline">
+                  Sign in
+                </Link>{" "}
+                if you have one, to keep your order history.
+              </p>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div>
+                  <label htmlFor="guest-name" className="text-xs font-semibold tracking-wider text-brand-navy/60 uppercase">
+                    Your name
+                  </label>
+                  <input
+                    id="guest-name"
+                    autoComplete="name"
+                    className="mt-1 w-full rounded-xl border border-sky-500/20 bg-white px-4 py-2.5 text-sm outline-none focus:border-sky-500"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="guest-email" className="text-xs font-semibold tracking-wider text-brand-navy/60 uppercase">
+                    Email
+                  </label>
+                  <input
+                    id="guest-email"
+                    type="email"
+                    autoComplete="email"
+                    className="mt-1 w-full rounded-xl border border-sky-500/20 bg-white px-4 py-2.5 text-sm outline-none focus:border-sky-500"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
+              </div>
+            </>
+          ) : null}
           <div>
             <label className="text-xs font-semibold tracking-wider text-brand-navy/60 uppercase">
               Delivery address (Yerevan)

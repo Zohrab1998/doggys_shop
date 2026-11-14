@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { AuthzError, requireUser } from "@/lib/authz";
+import { randomUUID } from "node:crypto";
+import { getCartOwner } from "@/lib/cart-owner";
 import { formatPrice } from "@/lib/catalog";
 import { DELIVERY_AREA, MIN_ORDER_AMD, quoteDelivery } from "@/lib/delivery";
 import { prisma } from "@/lib/prisma";
@@ -9,18 +10,30 @@ import { appBaseUrl, getStripe } from "@/lib/stripe";
 const checkoutSchema = z.object({
   deliveryAddress: z.string().trim().min(1).max(500),
   phone: z.string().trim().min(1).max(50),
+  // Only needed for guests; signed-in customers use their account details.
+  name: z.string().trim().max(120).optional(),
+  email: z.union([z.literal(""), z.email()]).optional(),
 });
 
 export async function POST(req: Request) {
   try {
-    const user = await requireUser();
+    const owner = await getCartOwner();
+    if (!owner) {
+      return NextResponse.json({ ok: false, message: "Your cart is empty." }, { status: 400 });
+    }
     const parsed = checkoutSchema.safeParse(await req.json());
     if (!parsed.success) {
       return NextResponse.json({ ok: false, message: "Please provide a delivery address and phone." }, { status: 400 });
     }
 
+    const customerName = owner.kind === "user" ? owner.user.name : parsed.data.name;
+    const customerEmail = owner.kind === "user" ? owner.user.email : parsed.data.email;
+    if (owner.kind === "guest" && (!customerName || !customerEmail)) {
+      return NextResponse.json({ ok: false, message: "Please enter your name and email." }, { status: 400 });
+    }
+
     const cartItems = await prisma.cartItem.findMany({
-      where: { userId: user.id },
+      where: owner.where,
       include: { product: true },
     });
 
@@ -49,9 +62,13 @@ export async function POST(req: Request) {
     }
     const totalAmd = delivery.totalAmd;
 
+    const accessToken = randomUUID();
     const order = await prisma.order.create({
       data: {
-        userId: user.id,
+        ...owner.where,
+        customerName: customerName ?? null,
+        customerEmail: customerEmail ?? null,
+        accessToken,
         totalAmd,
         deliveryFeeAmd: delivery.feeAmd,
         deliveryAddress: parsed.data.deliveryAddress,
@@ -72,7 +89,7 @@ export async function POST(req: Request) {
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
-      customer_email: user.email ?? undefined,
+      customer_email: customerEmail || undefined,
       line_items: [
         ...cartItems.map((item) => ({
           quantity: item.quantity,
@@ -97,7 +114,7 @@ export async function POST(req: Request) {
           : []),
       ],
       metadata: { orderId: order.id },
-      success_url: `${base}/orders/${order.id}?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${base}/orders/${order.id}?token=${accessToken}&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${base}/cart`,
     });
 
@@ -115,9 +132,6 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ ok: true, checkoutUrl: session.url });
   } catch (error) {
-    if (error instanceof AuthzError) {
-      return NextResponse.json({ ok: false, message: error.message }, { status: error.status });
-    }
     const message = error instanceof Error ? error.message : "Failed to start checkout.";
     return NextResponse.json({ ok: false, message }, { status: 500 });
   }

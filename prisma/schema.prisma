@@ -51,6 +51,7 @@ model User {
   sessions  Session[]
   cartItems CartItem[]
   orders    Order[]
+  wishlist  WishlistItem[]
 }
 
 model Account {
@@ -94,9 +95,24 @@ model VerificationToken {
 
 model CartItem {
   id        String   @id @default(cuid())
-  userId    String
+  /// Set for signed-in shoppers; guests are identified by guestId (a browser cookie) instead.
+  userId    String?
+  guestId   String?
   productId String
   quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+
+  user    User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@unique([guestId, productId])
+}
+
+model WishlistItem {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
   createdAt DateTime @default(now())
 
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -107,7 +123,15 @@ model CartItem {
 
 model Order {
   id              String      @id @default(cuid())
-  userId          String
+  /// Null for guest checkout (no account).
+  userId          String?
+  /// Guest cart cookie the order was placed from, so that cart can be emptied once paid.
+  guestId         String?
+  /// Contact details typed at checkout by guests.
+  customerName    String?
+  customerEmail   String?
+  /// Secret in the order link, so a guest can open their order page without an account.
+  accessToken     String?
   status          OrderStatus @default(PENDING_PAYMENT)
   /// Grand total charged: items + deliveryFeeAmd.
   totalAmd        Int
@@ -119,7 +143,7 @@ model Order {
   shippedAt       DateTime?
   deliveredAt     DateTime?
 
-  user    User        @relation(fields: [userId], references: [id], onDelete: Restrict)
+  user    User?       @relation(fields: [userId], references: [id], onDelete: Restrict)
   items   OrderItem[]
   payment Payment?
 
@@ -188,6 +212,7 @@ model Product {
 
   cartItems  CartItem[]
   orderItems OrderItem[]
+  wishlistedBy WishlistItem[]
   image      ProductImage?
 
   @@index([animalType])

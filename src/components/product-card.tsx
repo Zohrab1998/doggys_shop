@@ -2,6 +2,7 @@ import type { AnimalType, ProductCategory } from "@prisma/client";
 import Link from "next/link";
 import AddToCartButton from "@/components/add-to-cart-button";
 import ProductImage from "@/components/product-image";
+import { WishlistButton } from "@/components/wishlist";
 import { animalTheme, categoryLabel, formatPrice } from "@/lib/catalog";
 
 export type ProductCardData = {
@@ -38,6 +39,7 @@ export default function ProductCard({ product }: { product: ProductCardData }) {
           </span>
         ) : null}
       </Link>
+      <WishlistButton productId={product.id} className="absolute top-2 right-2" />
       <div className="flex flex-1 flex-col gap-1 p-4">
         <Link href={`/shop/${product.slug}`} className="text-sm font-bold text-brand-navy hover:underline">
           {product.name}

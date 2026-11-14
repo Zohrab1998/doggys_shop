@@ -1,7 +1,5 @@
 "use client";
 
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function AddToCartButton({
@@ -16,18 +14,10 @@ export default function AddToCartButton({
   disabled?: boolean;
   className?: string;
 }) {
-  const { status } = useSession();
-  const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [added, setAdded] = useState(false);
 
   async function onClick() {
-    if (status !== "authenticated") {
-      const here = window.location.pathname + window.location.search;
-      router.push(`/signin?callbackUrl=${encodeURIComponent(here)}`);
-      return;
-    }
-
     setBusy(true);
     try {
       const res = await fetch("/api/cart", {

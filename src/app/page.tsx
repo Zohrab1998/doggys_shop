@@ -1,4 +1,5 @@
 import { Bone, Droplets, type LucideIcon, Pill, ShieldCheck, ShoppingBag, ToyBrick, Truck, Wallet } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import type { ProductCategory } from "@prisma/client";
 import AnimalArt from "@/components/animal-art";
@@ -41,7 +42,7 @@ export default async function HomePage() {
     <div>
       {/* ===== HERO ===== */}
       <section className="relative overflow-hidden bg-gradient-to-b from-brand-sky-wave to-brand-sky">
-        <div className="relative mx-auto grid max-w-7xl gap-8 px-4 pt-10 pb-14 sm:px-6 lg:grid-cols-[1.1fr_1fr] lg:items-center lg:pt-14">
+        <div className="relative mx-auto grid max-w-7xl gap-8 px-4 pt-10 pb-14 sm:px-6 lg:grid-cols-[1fr_1.15fr] lg:items-center lg:pt-14">
           <div>
             <p className="text-sm font-bold tracking-[0.2em] text-brand-blue uppercase">Welcome to Doggy&apos;s Shop</p>
             <h1 className="mt-3 text-5xl leading-[1.05] font-extrabold text-brand-orange sm:text-6xl">
@@ -75,22 +76,18 @@ export default async function HomePage() {
             </div>
           </div>
 
-          {/* The four mascots. To use a real photo instead, put it in /public and swap this block
-              for an <Image>. */}
-          <div className="relative mx-auto aspect-[5/4] w-full max-w-xl">
-            <svg aria-hidden viewBox="0 0 500 400" className="absolute inset-0 h-full w-full">
-              <path
-                d="M70 210c-30-90 40-180 150-180c80 0 110 40 170 50c70 12 100 80 80 150c-22 78-110 130-220 120c-90-8-156-70-180-140z"
-                fill="#aee2fb"
-              />
-              <circle cx="60" cy="90" r="14" fill="#f4821f" opacity=".25" />
-              <circle cx="455" cy="330" r="20" fill="#7b61d9" opacity=".2" />
-              <circle cx="430" cy="60" r="10" fill="#22a06b" opacity=".3" />
-            </svg>
-            <AnimalArt animal="BIRD" title="Parrot" className="animal-bob absolute top-[2%] right-[6%] w-[30%] [animation-delay:0.4s]" />
-            <AnimalArt animal="CAT" title="Cat" className="absolute bottom-[4%] left-[2%] w-[40%]" />
-            <AnimalArt animal="DOG" title="Dog" className="absolute bottom-[4%] left-[26%] w-[52%]" />
-            <AnimalArt animal="HAMSTER" title="Hamster" className="absolute right-[4%] bottom-[4%] w-[27%]" />
+          {/* Studio photo of the four pets. `mix-blend-multiply` lets its white backdrop melt
+              into the sky-blue hero, and the free-delivery banner overlaps its bottom edge. */}
+          <div className="relative -mb-14 self-end">
+            <Image
+              src="/hero/pets.jpg"
+              alt="A golden retriever, a tabby cat, a grey parrot and a hamster"
+              width={1180}
+              height={577}
+              priority
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              className="h-auto w-full mix-blend-multiply"
+            />
           </div>
         </div>
       </section>

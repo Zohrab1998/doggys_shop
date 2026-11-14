@@ -29,7 +29,8 @@ export default async function AdminOrdersPage() {
               <div>
                 <p className="font-bold text-brand-navy">Order #{order.id.slice(0, 8)}</p>
                 <p className="text-sm text-brand-navy/60">
-                  {order.user.name ?? order.user.email} · {order.items.length} item(s) ·{" "}
+                  {order.user?.name ?? order.customerName ?? order.user?.email ?? order.customerEmail ?? "Guest"}
+                  {order.userId ? "" : " (guest)"} · {order.items.length} item(s) ·{" "}
                   {formatPrice(order.totalAmd)}
                 </p>
                 <p className="text-sm text-brand-navy/60">

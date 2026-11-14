@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import AddToCartButton from "@/components/add-to-cart-button";
 import ProductCard from "@/components/product-card";
 import ProductImage from "@/components/product-image";
+import { WishlistButton } from "@/components/wishlist";
 import { animalOption, animalTheme, categoryLabel, formatPrice } from "@/lib/catalog";
 import { DELIVERY_AREA, MIN_ORDER_AMD } from "@/lib/delivery";
 import { prisma } from "@/lib/prisma";
@@ -73,12 +74,15 @@ export default async function ProductPage({ params }: Props) {
             <p className="mt-5 leading-relaxed whitespace-pre-line text-brand-navy/80">{product.description}</p>
           ) : null}
 
-          <AddToCartButton
-            productId={product.id}
-            color={theme.main}
-            disabled={!product.inStock}
-            className="mt-7 w-full py-3.5 text-sm sm:w-64"
-          />
+          <div className="mt-7 flex items-center gap-3">
+            <AddToCartButton
+              productId={product.id}
+              color={theme.main}
+              disabled={!product.inStock}
+              className="mt-0 w-full py-3.5 text-sm sm:w-64"
+            />
+            <WishlistButton productId={product.id} className="h-12 w-12 shrink-0 bg-white" />
+          </div>
 
           <p className="mt-5 flex items-center gap-2 rounded-xl p-3 text-sm font-semibold" style={{ background: theme.soft, color: theme.dark }}>
             <Truck className="h-5 w-5 shrink-0" />

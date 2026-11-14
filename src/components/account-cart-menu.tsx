@@ -1,6 +1,6 @@
 "use client";
 
-import { LogOut, Settings, ShoppingCart, User } from "lucide-react";
+import { Heart, LogOut, Settings, ShoppingCart, User } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -13,7 +13,7 @@ export default function AccountCartMenu() {
   const [cartCount, setCartCount] = useState<number | null>(null);
 
   useEffect(() => {
-    if (status !== "authenticated") {
+    if (status === "loading") {
       return;
     }
 
@@ -49,9 +49,15 @@ export default function AccountCartMenu() {
         <User className="h-5 w-5" />
       </Link>
 
+      {signedIn ? (
+        <Link href="/wishlist" className={iconButton} aria-label="Wishlist" title="Wishlist">
+          <Heart className="h-5 w-5" />
+        </Link>
+      ) : null}
+
       <Link href="/cart" className={iconButton} aria-label="Cart" title="Cart">
         <ShoppingCart className="h-5 w-5" />
-        {signedIn && cartCount ? (
+        {cartCount ? (
           <span className="absolute -top-0.5 -right-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-brand-orange px-1 text-[11px] font-extrabold text-white">
             {cartCount}
           </span>

@@ -19,7 +19,12 @@ export async function markOrderPaidFromSession(orderId: string, stripePaymentInt
       where: { id: orderId },
       data: { status: "PAID", paidAt: new Date() },
     });
-    await tx.cartItem.deleteMany({ where: { userId: order.userId } });
+    // Empty the cart the order came from (account cart or guest cart).
+    if (order.userId) {
+      await tx.cartItem.deleteMany({ where: { userId: order.userId } });
+    } else if (order.guestId) {
+      await tx.cartItem.deleteMany({ where: { guestId: order.guestId } });
+    }
   });
 }
 
@@ -36,3 +41,14 @@ export async function syncOrderFromCheckoutSession(orderId: string, checkoutSess
   const stripePaymentIntentId = typeof piRef === "string" ? piRef : piRef?.id;
   await markOrderPaidFromSession(orderId, stripePaymentIntentId);
 }
+
+/** Orders that count as sales (money received). */
+export const PAID_STATUSES = ["PAID", "SHIPPED", "DELIVERED"] as const;
+
+export const ORDER_STATUS_LABEL: Record<string, string> = {
+  PENDING_PAYMENT: "Awaiting payment",
+  PAID: "Paid",
+  SHIPPED: "Shipped",
+  DELIVERED: "Delivered",
+  CANCELLED: "Cancelled",
+};
