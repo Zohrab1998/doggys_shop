@@ -109,7 +109,9 @@ model Order {
   id              String      @id @default(cuid())
   userId          String
   status          OrderStatus @default(PENDING_PAYMENT)
+  /// Grand total charged: items + deliveryFeeAmd.
   totalAmd        Int
+  deliveryFeeAmd  Int         @default(0)
   deliveryAddress String
   phone           String
   createdAt       DateTime    @default(now())
@@ -169,10 +171,9 @@ model Product {
 
   /// Whole Armenian Dram (AMD has no practical subunit in everyday pricing).
   priceAmd Int
-  imageUrl String
-
-  rating      Float @default(0)
-  reviewCount Int   @default(0)
+  /// Either an external URL, or `/api/product-image/<id>` when the photo was uploaded
+  /// through the admin page (see ProductImage). Empty = show the placeholder artwork.
+  imageUrl String @default("")
 
   animalType AnimalType
   category   ProductCategory
@@ -187,10 +188,23 @@ model Product {
 
   cartItems  CartItem[]
   orderItems OrderItem[]
+  image      ProductImage?
 
   @@index([animalType])
   @@index([category])
   @@index([brandId])
+}
+
+/// Photo uploaded from the admin page, stored in the database so the shop works on any host
+/// without separate file storage.
+model ProductImage {
+  id        String   @id @default(cuid())
+  productId String   @unique
+  mimeType  String
+  data      Bytes
+  updatedAt DateTime @updatedAt
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model ContactMessage {

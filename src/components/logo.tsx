@@ -1,12 +1,5 @@
-import { PawPrint } from "lucide-react";
+import Image from "next/image";
 
-export default function Logo({ size = 44 }: { size?: number }) {
-  return (
-    <span
-      className="flex items-center justify-center rounded-full bg-brand-orange text-white"
-      style={{ height: size, width: size }}
-    >
-      <PawPrint className="h-6 w-6" />
-    </span>
-  );
+export default function Logo({ size = 56 }: { size?: number }) {
+  return <Image src="/logo.png" alt="Doggy's Shop logo" width={size} height={size} priority />;
 }

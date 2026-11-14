@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { AuthzError, requireUser } from "@/lib/authz";
+import { formatPrice } from "@/lib/catalog";
+import { DELIVERY_AREA, MIN_ORDER_AMD, quoteDelivery } from "@/lib/delivery";
 import { prisma } from "@/lib/prisma";
 import { appBaseUrl, getStripe } from "@/lib/stripe";
 
@@ -26,12 +28,32 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: false, message: "Your cart is empty." }, { status: 400 });
     }
 
-    const totalAmd = cartItems.reduce((sum, item) => sum + item.product.priceAmd * item.quantity, 0);
+    const unavailable = cartItems.find((item) => !item.product.inStock);
+    if (unavailable) {
+      return NextResponse.json(
+        { ok: false, message: `"${unavailable.product.name}" is out of stock — please remove it from your cart.` },
+        { status: 400 },
+      );
+    }
+
+    const subtotalAmd = cartItems.reduce((sum, item) => sum + item.product.priceAmd * item.quantity, 0);
+    const delivery = quoteDelivery(subtotalAmd);
+    if (!delivery.allowed) {
+      return NextResponse.json(
+        {
+          ok: false,
+          message: `The minimum order is ${formatPrice(MIN_ORDER_AMD)}. Add ${formatPrice(delivery.remainingAmd)} more to check out.`,
+        },
+        { status: 400 },
+      );
+    }
+    const totalAmd = delivery.totalAmd;
 
     const order = await prisma.order.create({
       data: {
         userId: user.id,
         totalAmd,
+        deliveryFeeAmd: delivery.feeAmd,
         deliveryAddress: parsed.data.deliveryAddress,
         phone: parsed.data.phone,
         items: {
@@ -51,14 +73,29 @@ export async function POST(req: Request) {
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       customer_email: user.email ?? undefined,
-      line_items: cartItems.map((item) => ({
-        quantity: item.quantity,
-        price_data: {
-          currency: "amd",
-          unit_amount: item.product.priceAmd,
-          product_data: { name: item.product.name },
-        },
-      })),
+      line_items: [
+        ...cartItems.map((item) => ({
+          quantity: item.quantity,
+          price_data: {
+            currency: "amd",
+            // Stripe wants amounts in the smallest currency unit, which for AMD is 1/100 dram.
+            unit_amount: item.product.priceAmd * 100,
+            product_data: { name: item.product.name },
+          },
+        })),
+        ...(delivery.feeAmd > 0
+          ? [
+              {
+                quantity: 1,
+                price_data: {
+                  currency: "amd",
+                  unit_amount: delivery.feeAmd * 100,
+                  product_data: { name: `Delivery (${DELIVERY_AREA})` },
+                },
+              },
+            ]
+          : []),
+      ],
       metadata: { orderId: order.id },
       success_url: `${base}/orders/${order.id}?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${base}/cart`,

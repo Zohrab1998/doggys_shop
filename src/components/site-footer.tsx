@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { formatPrice } from "@/lib/catalog";
+import { DELIVERY_AREA, MIN_ORDER_AMD } from "@/lib/delivery";
 
 function InstagramIcon() {
   return (
@@ -28,14 +30,16 @@ function TwitterIcon() {
 
 export default function SiteFooter() {
   return (
-    <footer className="relative z-10 mt-16 bg-slate-900 text-sky-100">
+    <footer className="relative z-10 mt-16 bg-brand-navy text-sky-100">
       <div className="mx-auto grid max-w-7xl gap-8 px-6 py-10 sm:grid-cols-3">
         <div>
           <p className="text-lg font-extrabold text-white">Doggy&apos;s Shop</p>
           <p className="mt-2 text-sm text-sky-100/70">
             Curated supplies, nutrition, and care for dogs, cats, birds, and hamsters.
           </p>
-          <p className="mt-2 text-sm text-sky-100/70">Delivery within Yerevan, Armenia.</p>
+          <p className="mt-2 text-sm text-sky-100/70">
+            Free delivery in {DELIVERY_AREA} on orders from {formatPrice(MIN_ORDER_AMD)}.
+          </p>
         </div>
 
         <div>

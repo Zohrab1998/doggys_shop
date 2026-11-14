@@ -1,6 +1,8 @@
 "use client";
 
+import { SlidersHorizontal } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
 import { ANIMAL_TYPE_OPTIONS, CATEGORY_OPTIONS } from "@/lib/catalog";
 
 type Brand = { id: string; name: string };
@@ -22,6 +24,8 @@ export default function FilterSidebar({
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  // Collapsed by default on phones so products are visible straight away.
+  const [openOnMobile, setOpenOnMobile] = useState(false);
 
   function updateParam(key: string, value: string | null) {
     const next = new URLSearchParams(searchParams.toString());
@@ -30,100 +34,123 @@ export default function FilterSidebar({
     } else {
       next.delete(key);
     }
-    router.push(`/shop?${next.toString()}`);
+    next.delete("page");
+    const query = next.toString();
+    router.push(query ? `/shop?${query}` : "/shop");
   }
 
-  function toggleValue(key: string, value: string) {
-    updateParam(key, selected[key as keyof Selected] === value ? null : value);
+  function toggleValue(key: keyof Selected, value: string) {
+    updateParam(key, selected[key] === value ? null : value);
   }
 
+  const activeCount = Object.values(selected).filter(Boolean).length;
+  const groupTitle = "text-xs font-bold tracking-wide text-brand-navy/60 uppercase";
+  const optionClass = "flex cursor-pointer items-center gap-2 text-sm text-brand-navy";
   const inputClass =
-    "w-20 rounded-md border border-sky-500/20 px-2 py-1 text-sm outline-none focus:border-sky-500";
+    "w-full rounded-lg border border-brand-blue/20 px-2 py-1.5 text-sm outline-none focus:border-brand-blue";
 
   return (
-    <aside className="h-fit space-y-6 rounded-2xl bg-white/70 p-5 shadow-sm">
-      <h2 className="text-sm font-extrabold tracking-widest text-orange-500 uppercase">Filtration</h2>
+    <aside className="h-fit rounded-2xl bg-white p-5 shadow-sm">
+      <button
+        type="button"
+        onClick={() => setOpenOnMobile((open) => !open)}
+        aria-expanded={openOnMobile}
+        className="flex w-full items-center justify-between text-sm font-extrabold tracking-widest text-brand-blue uppercase lg:pointer-events-none"
+      >
+        <span className="flex items-center gap-2">
+          <SlidersHorizontal className="h-4 w-4" />
+          Filters{activeCount ? ` (${activeCount})` : ""}
+        </span>
+        <span className="lg:hidden">{openOnMobile ? "−" : "+"}</span>
+      </button>
 
-      <div>
-        <p className="text-xs font-bold tracking-wide text-slate-500 uppercase">Animal</p>
-        <div className="mt-2 space-y-1">
-          {ANIMAL_TYPE_OPTIONS.map((option) => (
-            <label key={option.value} className="flex items-center gap-2 text-sm text-slate-900">
-              <input
-                type="checkbox"
-                checked={selected.animalType === option.value}
-                onChange={() => toggleValue("animalType", option.value)}
-              />
-              {option.emoji} {option.label}
-            </label>
-          ))}
-        </div>
-      </div>
-
-      <div>
-        <p className="text-xs font-bold tracking-wide text-slate-500 uppercase">Category</p>
-        <div className="mt-2 space-y-1">
-          {CATEGORY_OPTIONS.map((option) => (
-            <label key={option.value} className="flex items-center gap-2 text-sm text-slate-900">
-              <input
-                type="checkbox"
-                checked={selected.category === option.value}
-                onChange={() => toggleValue("category", option.value)}
-              />
-              {option.label}
-            </label>
-          ))}
-        </div>
-      </div>
-
-      {brands.length > 0 ? (
+      <div className={`mt-5 space-y-6 ${openOnMobile ? "block" : "hidden"} lg:block`}>
         <div>
-          <p className="text-xs font-bold tracking-wide text-slate-500 uppercase">Brand</p>
-          <div className="mt-2 space-y-1">
-            {brands.map((brand) => (
-              <label key={brand.id} className="flex items-center gap-2 text-sm text-slate-900">
+          <p className={groupTitle}>Animal</p>
+          <div className="mt-2 space-y-1.5">
+            {ANIMAL_TYPE_OPTIONS.map((option) => (
+              <label key={option.value} className={optionClass}>
                 <input
                   type="checkbox"
-                  checked={selected.brandId === brand.id}
-                  onChange={() => toggleValue("brandId", brand.id)}
+                  checked={selected.animalType === option.value}
+                  onChange={() => toggleValue("animalType", option.value)}
+                  style={{ accentColor: option.theme.main }}
                 />
-                {brand.name}
+                <span className="h-2.5 w-2.5 rounded-full" style={{ background: option.theme.main }} />
+                {option.label}
               </label>
             ))}
           </div>
         </div>
-      ) : null}
 
-      <div>
-        <p className="text-xs font-bold tracking-wide text-slate-500 uppercase">Price range (AMD)</p>
-        <div className="mt-2 flex items-center gap-2">
-          <input
-            type="number"
-            min={0}
-            placeholder="Min"
-            className={inputClass}
-            defaultValue={selected.priceMin ?? ""}
-            onBlur={(e) => updateParam("priceMin", e.target.value || null)}
-          />
-          <span className="text-slate-400">–</span>
-          <input
-            type="number"
-            min={0}
-            placeholder="Max"
-            className={inputClass}
-            defaultValue={selected.priceMax ?? ""}
-            onBlur={(e) => updateParam("priceMax", e.target.value || null)}
-          />
+        <div>
+          <p className={groupTitle}>Category</p>
+          <div className="mt-2 space-y-1.5">
+            {CATEGORY_OPTIONS.map((option) => (
+              <label key={option.value} className={optionClass}>
+                <input
+                  type="checkbox"
+                  checked={selected.category === option.value}
+                  onChange={() => toggleValue("category", option.value)}
+                />
+                {option.label}
+              </label>
+            ))}
+          </div>
         </div>
-      </div>
 
-      <button
-        type="button"
-        onClick={() => router.push("/shop")}
-        className="text-sm font-medium text-orange-600 hover:underline"
-      >
-        Clear all filters
-      </button>
+        {brands.length > 0 ? (
+          <div>
+            <p className={groupTitle}>Brand</p>
+            <div className="mt-2 space-y-1.5">
+              {brands.map((brand) => (
+                <label key={brand.id} className={optionClass}>
+                  <input
+                    type="checkbox"
+                    checked={selected.brandId === brand.id}
+                    onChange={() => toggleValue("brandId", brand.id)}
+                  />
+                  {brand.name}
+                </label>
+              ))}
+            </div>
+          </div>
+        ) : null}
+
+        <div>
+          <p className={groupTitle}>Price range (AMD)</p>
+          {/* `key` resets the uncontrolled inputs when filters are cleared. */}
+          <div key={`${selected.priceMin}-${selected.priceMax}`} className="mt-2 flex items-center gap-2">
+            <input
+              type="number"
+              min={0}
+              placeholder="Min"
+              aria-label="Minimum price"
+              className={inputClass}
+              defaultValue={selected.priceMin ?? ""}
+              onBlur={(e) => updateParam("priceMin", e.target.value || null)}
+            />
+            <span className="text-brand-navy/40">–</span>
+            <input
+              type="number"
+              min={0}
+              placeholder="Max"
+              aria-label="Maximum price"
+              className={inputClass}
+              defaultValue={selected.priceMax ?? ""}
+              onBlur={(e) => updateParam("priceMax", e.target.value || null)}
+            />
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => router.push("/shop")}
+          className="text-sm font-bold text-brand-orange hover:underline"
+        >
+          Clear all filters
+        </button>
+      </div>
     </aside>
   );
 }

@@ -1,124 +1,175 @@
-import { Bone, Droplets, type LucideIcon, Pill, ShoppingBag, ToyBrick } from "lucide-react";
-import Image from "next/image";
+import { Bone, Droplets, type LucideIcon, Pill, ShieldCheck, ShoppingBag, ToyBrick, Truck, Wallet } from "lucide-react";
 import Link from "next/link";
-import { ProductCategory } from "@prisma/client";
+import type { ProductCategory } from "@prisma/client";
+import AnimalArt from "@/components/animal-art";
 import ProductCard from "@/components/product-card";
-import HeroIllustration from "@/components/hero-illustration";
-import PawPrints from "@/components/paw-prints";
+import { ANIMAL_TYPE_OPTIONS, formatPrice } from "@/lib/catalog";
+import { DELIVERY_AREA, MIN_ORDER_AMD } from "@/lib/delivery";
 import { prisma } from "@/lib/prisma";
 
-const CATEGORY_TILES: { category: ProductCategory; label: string; Icon: LucideIcon; className: string; iconClassName: string }[] = [
-  { category: ProductCategory.TOYS, label: "Toys", Icon: ToyBrick, className: "bg-brand-sky-light", iconClassName: "text-brand-navy" },
-  { category: ProductCategory.MEDICINE, label: "Medicine", Icon: Pill, className: "bg-brand-navy", iconClassName: "text-white" },
-  { category: ProductCategory.FOOD, label: "Food", Icon: Bone, className: "bg-orange-100", iconClassName: "text-brand-orange" },
-  { category: ProductCategory.HYGIENE, label: "Hygiene", Icon: Droplets, className: "bg-brand-sky-wave", iconClassName: "text-brand-navy" },
-  { category: ProductCategory.ACCESSORIES, label: "Accessories", Icon: ShoppingBag, className: "bg-brand-sky-light", iconClassName: "text-brand-navy" },
+// Products are managed from the admin page, so always read them fresh.
+export const dynamic = "force-dynamic";
+
+const CATEGORY_TILES: { category: ProductCategory; label: string; hint: string; Icon: LucideIcon }[] = [
+  { category: "TOYS", label: "Toys", hint: "Play & chew", Icon: ToyBrick },
+  { category: "MEDICINE", label: "Medicine", hint: "Health & vitamins", Icon: Pill },
+  { category: "FOOD", label: "Food", hint: "Meals & treats", Icon: Bone },
+  { category: "HYGIENE", label: "Hygiene", hint: "Clean & groomed", Icon: Droplets },
+  { category: "ACCESSORIES", label: "Accessories", hint: "Beds, bowls & more", Icon: ShoppingBag },
+];
+
+const PERKS: { Icon: LucideIcon; title: string; text: string }[] = [
+  { Icon: Truck, title: "Free delivery", text: `Across ${DELIVERY_AREA} on orders from ${formatPrice(MIN_ORDER_AMD)}.` },
+  { Icon: ShieldCheck, title: "Chosen with care", text: "Trusted brands for dogs, cats, birds and hamsters." },
+  { Icon: Wallet, title: "Secure payment", text: "Pay online safely and track your order in your account." },
 ];
 
 export default async function HomePage() {
-  const [topRated, featuredByCategory] = await Promise.all([
-    prisma.product.findMany({
-      orderBy: [{ rating: "desc" }, { reviewCount: "desc" }],
-      take: 8,
-    }),
-    Promise.all(
-      CATEGORY_TILES.map((tile) =>
-        prisma.product.findFirst({
-          where: { category: tile.category },
-          orderBy: [{ rating: "desc" }, { reviewCount: "desc" }],
-        }),
-      ),
+  // The two newest products for each animal, interleaved so the row shows every pet.
+  const perAnimal = await Promise.all(
+    ANIMAL_TYPE_OPTIONS.map((animal) =>
+      prisma.product.findMany({
+        where: { inStock: true, animalType: animal.value },
+        orderBy: { createdAt: "desc" },
+        take: 2,
+      }),
     ),
-  ]);
+  );
+  const newest = [0, 1].flatMap((i) => perAnimal.flatMap((list) => (list[i] ? [list[i]] : [])));
 
   return (
     <div>
-      {/* ===== FULL-BLEED HERO ===== */}
-      <section className="relative overflow-hidden bg-brand-sky-light">
-        <PawPrints />
-
-        <svg
-          aria-hidden
-          viewBox="0 0 100 100"
-          preserveAspectRatio="none"
-          className="pointer-events-none absolute inset-y-0 right-0 hidden h-full w-3/5 md:block"
-        >
-          <path d="M38 0 C10 22 10 78 38 100 L100 100 L100 0 Z" fill="var(--color-brand-sky-wave)" />
-        </svg>
-
-        <div className="relative mx-auto grid max-w-7xl gap-10 px-6 pt-4 pb-20 md:grid-cols-2 md:items-center md:pt-10">
+      {/* ===== HERO ===== */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-brand-sky-wave to-brand-sky">
+        <div className="relative mx-auto grid max-w-7xl gap-8 px-4 pt-10 pb-14 sm:px-6 lg:grid-cols-[1.1fr_1fr] lg:items-center lg:pt-14">
           <div>
-            <Image src="/pets/paw.png" alt="" width={64} height={64} />
-            <h1 className="mt-4 text-5xl font-extrabold text-brand-navy sm:text-6xl">Doggy&apos;s Shop</h1>
-            <p className="mt-2 text-xl font-extrabold tracking-wide text-brand-orange uppercase">
-              Pet food and accessories
-            </p>
-            <p className="mt-5 max-w-sm text-brand-navy/70">
-              Discover curated supplies, nutrition, and expert care for every pet — delivered
-              within Yerevan, Armenia.
+            <p className="text-sm font-bold tracking-[0.2em] text-brand-blue uppercase">Welcome to Doggy&apos;s Shop</p>
+            <h1 className="mt-3 text-5xl leading-[1.05] font-extrabold text-brand-orange sm:text-6xl">
+              Your Pet&apos;s
+              <br />
+              Happy Place!
+            </h1>
+            <p className="mt-5 max-w-md text-lg text-brand-navy/80">
+              Food, toys, medicine, hygiene and accessories for every pet — delivered to your door in{" "}
+              {DELIVERY_AREA}.
             </p>
 
-            <Link
-              href="/about"
-              className="mt-8 flex h-28 w-28 flex-col items-center justify-center rounded-full bg-brand-orange text-center text-sm leading-tight font-extrabold tracking-wide text-white uppercase shadow-lg transition hover:bg-brand-orange-hover"
-            >
-              Read
-              <br />
-              More
-            </Link>
+            <div className="mt-8 grid max-w-xl grid-cols-2 gap-3 sm:gap-4">
+              {ANIMAL_TYPE_OPTIONS.map((animal) => (
+                <Link
+                  key={animal.value}
+                  href={`/shop?animalType=${animal.value}`}
+                  style={{ background: `linear-gradient(135deg, ${animal.theme.main}, ${animal.theme.dark})` }}
+                  className="group flex items-center gap-3 rounded-2xl p-3 text-white shadow-md transition hover:-translate-y-1 hover:shadow-xl sm:p-4"
+                >
+                  <span className="flex h-14 w-14 shrink-0 items-end justify-center overflow-hidden rounded-full bg-white/90 sm:h-16 sm:w-16">
+                    <AnimalArt animal={animal.value} className="h-[88%] w-[88%] transition group-hover:scale-110" />
+                  </span>
+                  <span className="text-base leading-tight font-extrabold sm:text-lg">
+                    Shop for
+                    <br />
+                    {animal.label}
+                  </span>
+                </Link>
+              ))}
+            </div>
           </div>
 
-          <div className="relative aspect-[4/3]">
-            <HeroIllustration />
+          {/* The four mascots. To use a real photo instead, put it in /public and swap this block
+              for an <Image>. */}
+          <div className="relative mx-auto aspect-[5/4] w-full max-w-xl">
+            <svg aria-hidden viewBox="0 0 500 400" className="absolute inset-0 h-full w-full">
+              <path
+                d="M70 210c-30-90 40-180 150-180c80 0 110 40 170 50c70 12 100 80 80 150c-22 78-110 130-220 120c-90-8-156-70-180-140z"
+                fill="#aee2fb"
+              />
+              <circle cx="60" cy="90" r="14" fill="#f4821f" opacity=".25" />
+              <circle cx="455" cy="330" r="20" fill="#7b61d9" opacity=".2" />
+              <circle cx="430" cy="60" r="10" fill="#22a06b" opacity=".3" />
+            </svg>
+            <AnimalArt animal="BIRD" title="Parrot" className="animal-bob absolute top-[2%] right-[6%] w-[30%] [animation-delay:0.4s]" />
+            <AnimalArt animal="CAT" title="Cat" className="absolute bottom-[4%] left-[2%] w-[40%]" />
+            <AnimalArt animal="DOG" title="Dog" className="absolute bottom-[4%] left-[26%] w-[52%]" />
+            <AnimalArt animal="HAMSTER" title="Hamster" className="absolute right-[4%] bottom-[4%] w-[27%]" />
           </div>
         </div>
       </section>
 
-      <div className="mx-auto max-w-7xl px-6 py-14">
-        {/* ===== CATEGORY QUICK TILES ===== */}
-        <section>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-5">
-            {CATEGORY_TILES.map(({ category, label, Icon, className, iconClassName }) => (
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        {/* ===== FREE DELIVERY BANNER ===== */}
+        <section className="relative -mt-6 overflow-hidden rounded-3xl bg-gradient-to-r from-brand-orange to-[#ffa94d] p-6 text-white shadow-lg sm:p-8">
+          <Truck aria-hidden className="absolute -right-6 -bottom-8 h-44 w-44 -rotate-6 text-white/15" />
+          <div className="relative flex flex-wrap items-center justify-between gap-5">
+            <div className="flex items-center gap-4">
+              <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-white text-brand-orange">
+                <Truck className="h-8 w-8" />
+              </span>
+              <div>
+                <p className="text-2xl font-extrabold sm:text-3xl">Free delivery in {DELIVERY_AREA}</p>
+                <p className="mt-1 font-semibold text-white/90">
+                  On every order from {formatPrice(MIN_ORDER_AMD)} — straight to your door.
+                </p>
+              </div>
+            </div>
+            <Link
+              href="/shop"
+              className="rounded-full bg-white px-7 py-3 text-sm font-extrabold tracking-wide text-brand-orange uppercase shadow transition hover:bg-brand-sky"
+            >
+              Shop now
+            </Link>
+          </div>
+        </section>
+
+        {/* ===== CATEGORIES ===== */}
+        <section className="mt-14">
+          <h2 className="text-center text-2xl font-extrabold tracking-wide text-brand-blue uppercase">Shop by category</h2>
+          <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+            {CATEGORY_TILES.map(({ category, label, hint, Icon }) => (
               <Link
                 key={category}
                 href={`/shop?category=${category}`}
-                className={`flex min-h-[120px] flex-col justify-end overflow-hidden rounded-2xl p-4 transition hover:-translate-y-0.5 hover:shadow-md ${className}`}
+                className="group flex flex-col items-center rounded-2xl bg-white p-5 text-center shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
               >
-                <Icon className={`mb-2 h-7 w-7 ${iconClassName}`} />
-                <span className={`text-sm font-bold ${iconClassName.includes("white") ? "text-white" : "text-brand-navy"}`}>
-                  {label}
+                <span className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-sky text-brand-blue transition group-hover:bg-brand-orange group-hover:text-white">
+                  <Icon className="h-7 w-7" />
                 </span>
+                <span className="mt-3 font-extrabold text-brand-navy">{label}</span>
+                <span className="text-xs text-brand-navy/60">{hint}</span>
               </Link>
             ))}
           </div>
         </section>
 
-        {/* ===== FEATURED CATEGORIES ===== */}
-        <section className="mt-16">
-          <h2 className="text-center text-2xl font-extrabold tracking-wide text-brand-orange uppercase">
-            Featured Categories
-          </h2>
-          <div className="mt-6 grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-5">
-            {featuredByCategory.map((product, i) =>
-              product ? (
-                <Link key={product.id} href={`/shop?category=${CATEGORY_TILES[i].category}`}>
-                  <ProductCard product={product} />
-                </Link>
-              ) : null,
-            )}
+        {/* ===== NEW ARRIVALS ===== */}
+        <section className="mt-14">
+          <div className="flex items-end justify-between">
+            <h2 className="text-2xl font-extrabold tracking-wide text-brand-blue uppercase">New in the shop</h2>
+            <Link href="/shop" className="text-sm font-bold text-brand-orange hover:underline">
+              View all →
+            </Link>
           </div>
+          {newest.length === 0 ? (
+            <p className="mt-6 text-brand-navy/60">Products are on their way — check back soon.</p>
+          ) : (
+            <div className="mt-6 grid grid-cols-2 gap-4 sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
+              {newest.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          )}
         </section>
 
-        {/* ===== TOP RATED PRODUCTS ===== */}
-        <section className="mt-16">
-          <h2 className="text-center text-2xl font-extrabold tracking-wide text-brand-orange uppercase">
-            Top Rated Pet Products
-          </h2>
-          <div className="mt-6 grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
-            {topRated.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+        {/* ===== PERKS ===== */}
+        <section className="mt-14 grid gap-4 sm:grid-cols-3">
+          {PERKS.map(({ Icon, title, text }) => (
+            <div key={title} className="flex items-start gap-4 rounded-2xl bg-white/70 p-5">
+              <Icon className="mt-0.5 h-7 w-7 shrink-0 text-brand-orange" />
+              <div>
+                <p className="font-extrabold text-brand-navy">{title}</p>
+                <p className="text-sm text-brand-navy/70">{text}</p>
+              </div>
+            </div>
+          ))}
         </section>
       </div>
     </div>

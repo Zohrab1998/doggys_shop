@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import ProductImage from "@/components/product-image";
 import { formatPrice } from "@/lib/catalog";
+import { DELIVERY_AREA, MIN_ORDER_AMD, quoteDelivery } from "@/lib/delivery";
 
 type CartItem = {
   id: string;
@@ -10,8 +12,10 @@ type CartItem = {
   product: {
     id: string;
     name: string;
+    slug: string;
     imageUrl: string;
     priceAmd: number;
+    animalType: "DOG" | "CAT" | "BIRD" | "HAMSTER";
   };
 };
 
@@ -91,15 +95,20 @@ export default function CartClient() {
   }
 
   const subtotal = items.reduce((sum, item) => sum + item.product.priceAmd * item.quantity, 0);
+  const delivery = quoteDelivery(subtotal);
+  const progress = Math.min(100, Math.round((subtotal / MIN_ORDER_AMD) * 100));
 
   return (
     <div className="mt-8 space-y-4">
       {items.map((item) => (
-        <div key={item.id} className="flex items-center gap-4 rounded-2xl bg-white p-4 shadow-sm">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={item.product.imageUrl} alt={item.product.name} className="h-20 w-20 rounded-xl object-cover" />
-          <div className="flex-1">
-            <p className="font-bold text-brand-navy">{item.product.name}</p>
+        <div key={item.id} className="flex flex-wrap items-center gap-4 rounded-2xl bg-white p-4 shadow-sm">
+          <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl">
+            <ProductImage imageUrl={item.product.imageUrl} name={item.product.name} animalType={item.product.animalType} />
+          </div>
+          <div className="min-w-0 flex-1">
+            <Link href={`/shop/${item.product.slug}`} className="font-bold text-brand-navy hover:underline">
+              {item.product.name}
+            </Link>
             <p className="text-sm text-brand-navy/60">{formatPrice(item.product.priceAmd)}</p>
           </div>
           <div className="flex items-center gap-2">
@@ -133,10 +142,37 @@ export default function CartClient() {
       ))}
 
       <div className="rounded-2xl bg-white p-5 shadow-sm">
-        <div className="flex items-center justify-between text-lg font-bold text-brand-navy">
-          <span>Subtotal</span>
-          <span>{formatPrice(subtotal)}</span>
+        {/* Progress towards the free-delivery minimum */}
+        <div className="rounded-xl bg-brand-sky p-4">
+          <p className="text-sm font-bold text-brand-navy">
+            {delivery.remainingAmd > 0
+              ? delivery.allowed
+                ? `Add ${formatPrice(delivery.remainingAmd)} more for free delivery in ${DELIVERY_AREA}.`
+                : `Add ${formatPrice(delivery.remainingAmd)} more to reach the ${formatPrice(MIN_ORDER_AMD)} minimum order.`
+              : `🎉 You get free delivery in ${DELIVERY_AREA}!`}
+          </p>
+          <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-white">
+            <div
+              className="h-full rounded-full bg-brand-orange transition-all duration-500"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
         </div>
+
+        <dl className="mt-5 space-y-1.5 text-brand-navy">
+          <div className="flex items-center justify-between">
+            <dt>Subtotal</dt>
+            <dd>{formatPrice(subtotal)}</dd>
+          </div>
+          <div className="flex items-center justify-between">
+            <dt>Delivery ({DELIVERY_AREA})</dt>
+            <dd>{delivery.feeAmd > 0 ? formatPrice(delivery.feeAmd) : delivery.allowed ? "Free" : "—"}</dd>
+          </div>
+          <div className="flex items-center justify-between border-t border-brand-sky pt-2 text-lg font-extrabold">
+            <dt>Total</dt>
+            <dd>{formatPrice(delivery.totalAmd)}</dd>
+          </div>
+        </dl>
 
         <div className="mt-5 space-y-3">
           <div>
@@ -164,10 +200,14 @@ export default function CartClient() {
         <button
           type="button"
           onClick={onCheckout}
-          disabled={checkingOut}
-          className="mt-5 w-full rounded-full bg-brand-orange py-3 font-bold text-white transition hover:bg-brand-orange-hover disabled:opacity-60"
+          disabled={checkingOut || !delivery.allowed}
+          className="mt-5 w-full rounded-full bg-brand-orange py-3 font-bold text-white transition hover:bg-brand-orange-hover disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {checkingOut ? "Redirecting to payment…" : "Proceed to payment"}
+          {checkingOut
+            ? "Redirecting to payment…"
+            : delivery.allowed
+              ? "Proceed to payment"
+              : `Minimum order ${formatPrice(MIN_ORDER_AMD)}`}
         </button>
         {message ? <p className="mt-2 text-sm text-red-600">{message}</p> : null}
       </div>

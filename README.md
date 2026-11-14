@@ -5,8 +5,8 @@ Toys / Medicine / Food / Hygiene / Accessories sub-categories.
 
 - Next.js App Router + TypeScript + Tailwind
 - Postgres + Prisma
-- Phase 1 scope: Home, Shop (browse + filters), About Us, Contact Us — no cart/checkout, accounts,
-  grooming booking, or delivery logic yet (those are next phases)
+- Built so far: Home, Shop (search, filters, per-animal colors and banner), product pages,
+  accounts, cart, Stripe checkout, order history, and an admin area for products and orders
 
 ## Prerequisites
 
@@ -31,22 +31,42 @@ Open http://localhost:3000.
 If `npm install` warns about packages with pending install scripts (`prisma`, etc.), run
 `npm approve-scripts --allow-scripts-pending` then `npm install` again.
 
+## Admin (adding products)
+
+The shop owner manages the catalog at `/admin/products`: add, edit and delete products, set
+the price (AMD), description, animal, category, brand, stock status, and upload a photo.
+Orders are at `/admin/orders`.
+
+To make an account an admin, sign up on the site first, then run:
+
+```bash
+npm run make-admin -- owner@example.com
+```
+
+Sign out and back in, and a gear icon appears in the header.
+
+## Delivery rule
+
+`src/lib/delivery.ts` holds the rule in one place: delivery within Yerevan only, free, with a
+10,000 AMD minimum order. The same file can switch to "paid delivery under 10,000 AMD".
+
 ## Project structure
 
-- `src/app/page.tsx` — homepage (hero, shop-by-animal links, featured categories, top rated
-  products)
-- `src/app/shop/` — product browse page with animal/category/brand/price filters
-  (`filter-sidebar.tsx`)
-- `src/app/about/`, `src/app/contact/` — static About Us page and a Contact Us form
-  (`src/app/api/contact/route.ts` stores submissions as `ContactMessage` rows)
-- `src/lib/catalog.ts` — animal type / category label helpers, AMD price formatting
-- `prisma/schema.prisma` — `Product`, `Brand`, `ContactMessage` models
-- `prisma/seed.ts` — sample brands + ~40 products across all animal types and categories
-- `design/` — reference mockups provided for the homepage/shop layout (not used at build time)
+- `src/app/page.tsx` — homepage (hero with the four animals, free-delivery banner, categories,
+  newest products)
+- `src/app/shop/` — shop page with search, filters and pagination; `shop-banner.tsx` is the
+  colored banner with the animated animal; `[slug]/page.tsx` is the product page
+- `src/app/admin/` — admin area (`products/` and `orders/`); API under `src/app/api/admin/`
+- `src/app/cart/`, `src/app/api/checkout/` — cart and Stripe checkout
+- `src/lib/catalog.ts` — animals (labels and colors), categories, AMD price formatting
+- `src/lib/delivery.ts` — minimum order / delivery fee rule
+- `src/components/animal-art.tsx` — the four SVG mascots
+- `prisma/schema.prisma` — data models; `prisma/seed.ts` — starter catalog (35 products)
+- `public/logo.png` — the Doggy's Shop logo
+- `design/` — reference mockups (not used at build time)
 
 ## Next phases (not built yet)
 
-- Cart, checkout, and accounts
+- Real product photos (upload them from the admin page)
 - Grooming appointment booking (minimum 2 days lead time)
-- Delivery limited to Yerevan city
-- Swap the placeholder text logo for the real "Doggy's Shop" logo asset
+- Armenian / Russian translations

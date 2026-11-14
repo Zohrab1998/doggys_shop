@@ -18,8 +18,9 @@ export default async function AdminOrdersPage() {
   });
 
   return (
-    <div className="mx-auto max-w-4xl px-6 py-14">
-      <h1 className="text-3xl font-bold text-brand-navy">Admin — Orders</h1>
+    <div className="mt-6">
+      <h1 className="text-3xl font-extrabold text-brand-navy">Orders</h1>
+      {orders.length === 0 ? <p className="mt-4 rounded-2xl bg-white p-8 text-center text-brand-navy/70">No orders yet.</p> : null}
 
       <div className="mt-6 space-y-4">
         {orders.map((order) => (

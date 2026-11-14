@@ -37,6 +37,9 @@ export async function POST(req: Request) {
     if (!product) {
       return NextResponse.json({ ok: false, message: "Product not found." }, { status: 404 });
     }
+    if (!product.inStock) {
+      return NextResponse.json({ ok: false, message: "This product is out of stock." }, { status: 409 });
+    }
 
     const existing = await prisma.cartItem.findUnique({
       where: { userId_productId: { userId: user.id, productId: product.id } },
