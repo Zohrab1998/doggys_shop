@@ -73,6 +73,13 @@ function slugify(value: string): string {
 }
 
 async function main() {
+  // `--if-empty` (used by the automatic deploy) leaves a shop that already has products alone,
+  // so products the owner deleted are never brought back.
+  if (process.argv.includes("--if-empty") && (await prisma.product.count()) > 0) {
+    console.log("[seed] The shop already has products — nothing to do.");
+    return;
+  }
+
   // Clear out the random demo products created by the very first version of this seed
   // (recognisable by their picsum.photos placeholder pictures), and their made-up brands.
   const removed = await prisma.product.deleteMany({
