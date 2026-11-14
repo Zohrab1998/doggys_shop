@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { ProductCategory } from "@prisma/client";
 import AnimalArt from "@/components/animal-art";
+import HeroDecor, { Paw } from "@/components/hero-decor";
 import ProductCard from "@/components/product-card";
 import { fmt } from "@/i18n/config";
 import { getI18n } from "@/i18n/server";
@@ -45,10 +46,14 @@ export default async function HomePage() {
   return (
     <div>
       {/* ===== HERO ===== */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-brand-sky-wave to-brand-sky">
+      <section className="relative overflow-hidden bg-gradient-to-br from-brand-sky-light via-brand-sky-wave to-brand-sky">
+        <HeroDecor badgeDelivery={m.home.perkDeliveryTitle} badgeCare={m.home.perkCareTitle} />
         <div className="relative mx-auto grid max-w-7xl gap-8 px-4 pt-10 pb-14 sm:px-6 lg:grid-cols-[1fr_1.15fr] lg:items-center lg:pt-14">
           <div>
-            <p className="text-sm font-bold tracking-[0.2em] text-brand-blue uppercase">{m.home.welcome}</p>
+            <p className="flex items-center gap-2 text-sm font-bold tracking-[0.2em] text-brand-blue uppercase">
+              <Paw className="h-6 w-6 -rotate-12 text-brand-orange" />
+              {m.home.welcome}
+            </p>
             <h1 className="mt-3 text-5xl leading-[1.05] font-extrabold text-brand-orange sm:text-6xl">
               {m.home.titleLine1}
               <br />
