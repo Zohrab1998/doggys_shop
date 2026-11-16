@@ -1,6 +1,7 @@
 import { Menu } from "lucide-react";
 import Link from "next/link";
 import AccountCartMenu from "@/components/account-cart-menu";
+import HeaderShell from "@/components/header-shell";
 import LanguageSwitcher from "@/components/language-switcher";
 import Logo from "@/components/logo";
 import SearchBox from "@/components/search-box";
@@ -17,10 +18,10 @@ export default async function SiteHeader() {
   ];
 
   return (
-    <header className="absolute inset-x-0 top-0 z-20">
-      <div className="mx-auto flex h-24 max-w-7xl items-center gap-3 px-4 sm:px-6">
+    <HeaderShell>
+      <div className="mx-auto flex h-[72px] max-w-7xl items-center gap-3 px-4 sm:h-24 sm:px-6">
         <Link href="/" className="flex shrink-0 items-center gap-2">
-          <Logo size={76} />
+          <Logo size={76} className="h-14 w-14 sm:h-[76px] sm:w-[76px]" />
           <span className="hidden text-xl leading-none font-extrabold text-brand-blue sm:block">
             Doggy&apos;s
             <br />
@@ -67,6 +68,6 @@ export default async function SiteHeader() {
           </details>
         </div>
       </div>
-    </header>
+    </HeaderShell>
   );
 }

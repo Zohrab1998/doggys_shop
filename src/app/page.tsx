@@ -45,7 +45,7 @@ export default async function HomePage() {
   return (
     <div className="relative">
       {/* ===== HERO ===== */}
-      <section className="relative -mt-24 overflow-hidden bg-gradient-to-b from-brand-sky-light via-brand-sky-wave to-brand-sky pt-24">
+      <section className="relative -mt-[72px] overflow-hidden sm:-mt-24 bg-gradient-to-b from-brand-sky-light via-brand-sky-wave to-brand-sky pt-24">
         <HeroDecor badgeDelivery={m.home.perkDeliveryTitle} badgeCare={m.home.perkCareTitle} />
         <div className="relative mx-auto grid max-w-7xl gap-12 px-4 pt-10 pb-14 sm:px-6 lg:grid-cols-[1fr_1.15fr] lg:items-center lg:pt-14">
           <div>
@@ -100,13 +100,13 @@ export default async function HomePage() {
 
           {/* The four pets, cut out of their studio photo, standing on a darker blue shape. The
               free-delivery banner overlaps the bottom edge of the photo. */}
-          <div className="relative -mb-6 self-end">
+          <div className="relative mb-4 self-end lg:mb-6 [&_img]:block">
             <HeroBlob />
             <Image
-              src="/hero/pets-cutout.webp"
+              src="/hero/pets-standing.webp"
               alt={m.home.heroAlt}
               width={1140}
-              height={718}
+              height={672}
               priority
               sizes="(max-width: 1024px) 100vw, 50vw"
               className="relative h-auto w-full drop-shadow-[0_12px_16px_rgba(11,68,112,0.25)]"

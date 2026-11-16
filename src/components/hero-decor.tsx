@@ -52,21 +52,22 @@ export default function HeroDecor({ badgeDelivery, badgeCare }: { badgeDelivery:
 }
 
 /**
- * A soft blue shape that sits behind the animals in the hero photo. Rendered inside the photo's
- * box, a little larger than the photo so its edges show around the animals.
+ * The blue shape behind the animals in the hero photo. It uses the photo's own coordinates
+ * (1140 × 672), so its flat bottom edge is exactly the line the animals stand on.
  */
 export function HeroBlob() {
   return (
     <svg
       aria-hidden
-      viewBox="0 0 600 420"
+      viewBox="0 0 1140 672"
       preserveAspectRatio="none"
-      className="pointer-events-none absolute -top-[6%] left-[3%] h-[106%] w-[94%]"
+      overflow="visible"
+      className="pointer-events-none absolute inset-0 h-full w-full"
     >
       <path
-        d="M70 220C60 140 130 70 225 64C290 60 320 30 390 34C490 40 560 110 552 200C548 260 580 300 572 350C564 405 515 420 450 420H140C80 420 40 395 44 345C48 300 76 275 70 220Z"
-        fill="#5aa9dc"
-        opacity="0.45"
+        d="M30 672C-6 672-34 650-34 610V300C-34 165 60 88 190 82C300 77 360 128 440 160C520 192 575 196 650 170C745 136 820 116 915 146C1050 190 1168 262 1174 395V612C1174 648 1150 672 1112 672Z"
+        fill="#4f9fd6"
+        opacity="0.5"
       />
     </svg>
   );
