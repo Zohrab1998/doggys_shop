@@ -1,10 +1,10 @@
 import type { AnimalType } from "@prisma/client";
-import AnimalArt from "@/components/animal-art";
+import AnimalPhoto from "@/components/animal-photo";
 import { animalTheme } from "@/lib/catalog";
 
 /**
- * Product photo, or — when the product has no photo yet — the animal mascot on that animal's
- * pale color. A plain <img> is used on purpose: photos can be admin uploads served from our
+ * Product photo, or — when the product has no photo yet — a photo of the animal it is for, on
+ * that animal's pale color. A plain <img> is used on purpose: photos can be admin uploads served from our
  * own API or any external URL the owner pastes, which next/image would refuse without
  * whitelisting every host.
  */
@@ -28,7 +28,11 @@ export default function ProductImage({
       className={`flex h-full w-full items-end justify-center ${className}`}
       style={{ background: animalTheme(animalType).soft }}
     >
-      <AnimalArt animal={animalType} className="h-3/4 w-3/4 opacity-90" />
+      <AnimalPhoto
+        animal={animalType}
+        sizes="(max-width: 768px) 40vw, 240px"
+        className="h-[82%] w-auto max-w-[80%] object-contain object-bottom"
+      />
     </div>
   );
 }

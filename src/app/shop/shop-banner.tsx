@@ -1,6 +1,7 @@
 import type { AnimalType, ProductCategory } from "@prisma/client";
+import Image from "next/image";
 import Link from "next/link";
-import AnimalArt from "@/components/animal-art";
+import AnimalPhoto, { animalAvatarSrc } from "@/components/animal-photo";
 import { getI18n } from "@/i18n/server";
 import { ANIMAL_TYPE_OPTIONS, CATEGORY_OPTIONS, DEFAULT_THEME, animalOption } from "@/lib/catalog";
 
@@ -14,7 +15,7 @@ function href(animalType?: AnimalType, category?: ProductCategory) {
 
 /**
  * Colored strip at the top of the shop. With an animal selected it takes that animal's color
- * and the mascot hops / runs / flies / rolls in from the right.
+ * and shows a photo of the animal on the right.
  */
 export default async function ShopBanner({
   animalType,
@@ -70,9 +71,13 @@ export default async function ShopBanner({
                     className="flex items-center gap-2 rounded-full bg-white py-1 pr-4 pl-1 text-sm font-bold transition hover:-translate-y-0.5"
                     style={{ color: option.theme.dark }}
                   >
-                    <span className="flex h-8 w-8 items-end justify-center overflow-hidden rounded-full" style={{ background: option.theme.soft }}>
-                      <AnimalArt animal={option.value} className="h-[85%] w-[85%]" />
-                    </span>
+                    <Image
+                      src={animalAvatarSrc(option.value)}
+                      alt=""
+                      width={32}
+                      height={32}
+                      className="h-8 w-8 rounded-full object-cover"
+                    />
                     {m.animals[option.value].label}
                   </Link>
                 ))}
@@ -80,9 +85,12 @@ export default async function ShopBanner({
         </div>
 
         {animal ? (
-          // `key` restarts the entrance animation whenever the selected animal changes.
-          <div key={animal.value} className={`animal-enter-${animal.value} hidden w-36 shrink-0 self-end sm:block md:w-44`}>
-            <AnimalArt animal={animal.value} title={m.animals[animal.value].label} className="animal-bob -mb-6 w-full drop-shadow-lg" />
+          <div className="hidden shrink-0 self-end sm:block">
+            <AnimalPhoto
+              animal={animal.value}
+              alt={m.animals[animal.value].label}
+              className="-mb-6 h-48 w-auto drop-shadow-[0_10px_14px_rgba(0,0,0,0.3)] md:h-56"
+            />
           </div>
         ) : null}
       </div>

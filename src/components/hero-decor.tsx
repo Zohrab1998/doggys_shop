@@ -35,13 +35,13 @@ export default function HeroDecor({ badgeDelivery, badgeCare }: { badgeDelivery:
       <span className="absolute bottom-[16%] left-[47%] hidden h-6 w-6 rounded-full bg-brand-orange/20 lg:block" />
 
       {/* Floating badges */}
-      <span className="animal-bob absolute top-[26%] right-[4%] hidden items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-extrabold text-brand-navy shadow-lg xl:flex">
+      <span className="absolute top-[26%] right-[4%] hidden items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-extrabold text-brand-navy shadow-lg xl:flex">
         <span className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-orange text-white">
           <Truck className="h-4 w-4" />
         </span>
         {badgeDelivery}
       </span>
-      <span className="animal-bob absolute top-[23%] left-[47%] hidden items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-extrabold text-brand-navy shadow-lg [animation-delay:2.3s] xl:flex">
+      <span className="absolute top-[23%] left-[47%] hidden items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-extrabold text-brand-navy shadow-lg xl:flex">
         <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#22a06b] text-white">
           <ShieldCheck className="h-4 w-4" />
         </span>
@@ -68,49 +68,6 @@ export function HeroBlob() {
         fill="#5aa9dc"
         opacity="0.45"
       />
-    </svg>
-  );
-}
-
-/** A Doggy's Shop bandana, drawn for the page edge as decoration. */
-export function Bandana({ className, style }: { className?: string; style?: React.CSSProperties }) {
-  return (
-    <svg viewBox="0 0 240 250" aria-hidden className={className} style={style}>
-      <defs>
-        <linearGradient id="bandana-cloth" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#f6ecdc" />
-          <stop offset="1" stopColor="#e8d6bb" />
-        </linearGradient>
-        <path id="bandana-text" d="M40 100Q117 120 190 100" />
-      </defs>
-      {/* tie ends */}
-      <path d="M196 46C214 34 232 40 236 56C222 54 210 58 198 64Z" fill="#e3cfb0" />
-      <path d="M200 58C216 66 224 84 216 98C206 88 196 80 188 74Z" fill="#dcc6a5" />
-      {/* folded band */}
-      <path d="M12 40Q120 62 204 44L208 66Q120 84 16 62Z" fill="#eadbc3" />
-      {/* triangle */}
-      <path d="M18 60Q120 84 206 64L130 232Q120 248 108 232Z" fill="url(#bandana-cloth)" />
-      {/* folds */}
-      <path d="M120 82Q118 160 118 236" fill="none" stroke="#d6c09e" strokeWidth="3" opacity="0.5" />
-      <path d="M60 80Q90 140 112 226" fill="none" stroke="#d6c09e" strokeWidth="2" opacity="0.4" />
-      {/* stitching */}
-      <path
-        d="M30 70Q120 92 194 74L128 220Q120 232 112 220Z"
-        fill="none"
-        stroke="#c9ae86"
-        strokeWidth="2"
-        strokeDasharray="5 5"
-      />
-      {/* knot */}
-      <ellipse cx="200" cy="56" rx="13" ry="11" fill="#dcc6a5" />
-      <text fontSize="19" fontWeight="800" fill="#0b4470" fontFamily="inherit">
-        <textPath href="#bandana-text" startOffset="50%" textAnchor="middle">
-          Doggy&apos;s Shop
-        </textPath>
-      </text>
-      <g transform="translate(94 128) scale(0.8)" fill="#f4821f">
-        <PawShape />
-      </g>
     </svg>
   );
 }

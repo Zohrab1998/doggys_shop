@@ -2,7 +2,7 @@ import { Bone, Droplets, type LucideIcon, Pill, ShieldCheck, ShoppingBag, ToyBri
 import Image from "next/image";
 import Link from "next/link";
 import type { ProductCategory } from "@prisma/client";
-import HeroDecor, { Bandana, HeroBlob, Paw } from "@/components/hero-decor";
+import HeroDecor, { HeroBlob, Paw } from "@/components/hero-decor";
 import ProductCard from "@/components/product-card";
 import { fmt } from "@/i18n/config";
 import { getI18n } from "@/i18n/server";
@@ -44,10 +44,6 @@ export default async function HomePage() {
 
   return (
     <div className="relative">
-      {/* Doggy's Shop bandana peeking in from the left edge (wide screens, where there is room) */}
-      <Bandana
-        className="pointer-events-none absolute top-[760px] -left-[34px] z-10 hidden w-[180px] -rotate-[16deg] drop-shadow-[0_10px_14px_rgba(11,68,112,0.25)] min-[1520px]:block min-[1800px]:left-6"
-      />
       {/* ===== HERO ===== */}
       <section className="relative -mt-24 overflow-hidden bg-gradient-to-b from-brand-sky-light via-brand-sky-wave to-brand-sky pt-24">
         <HeroDecor badgeDelivery={m.home.perkDeliveryTitle} badgeCare={m.home.perkCareTitle} />
