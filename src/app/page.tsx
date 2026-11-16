@@ -2,7 +2,6 @@ import { Bone, Droplets, type LucideIcon, Pill, ShieldCheck, ShoppingBag, ToyBri
 import Image from "next/image";
 import Link from "next/link";
 import type { ProductCategory } from "@prisma/client";
-import AnimalArt from "@/components/animal-art";
 import HeroDecor, { Paw } from "@/components/hero-decor";
 import ProductCard from "@/components/product-card";
 import { fmt } from "@/i18n/config";
@@ -69,12 +68,29 @@ export default async function HomePage() {
                   key={animal.value}
                   href={`/shop?animalType=${animal.value}`}
                   style={{ background: `linear-gradient(135deg, ${animal.theme.main}, ${animal.theme.dark})` }}
-                  className="group flex items-center gap-2 rounded-2xl p-2.5 text-white shadow-md transition hover:-translate-y-1 hover:shadow-xl sm:gap-3 sm:p-4"
+                  className="group relative flex items-center gap-2 overflow-hidden rounded-2xl p-2.5 text-white shadow-md transition hover:-translate-y-1 hover:shadow-xl sm:gap-3 sm:p-4"
                 >
-                  <span className="flex h-10 w-10 shrink-0 items-end justify-center overflow-hidden rounded-full bg-white/90 sm:h-16 sm:w-16">
-                    <AnimalArt animal={animal.value} className="h-[88%] w-[88%] transition group-hover:scale-110" />
+                  {/* Soft lighter waves across the button */}
+                  <svg
+                    aria-hidden
+                    viewBox="0 0 200 80"
+                    preserveAspectRatio="none"
+                    className="pointer-events-none absolute inset-0 h-full w-full transition-transform duration-500 group-hover:scale-110"
+                  >
+                    <path d="M0 52C34 34 62 70 102 52S166 26 200 40V80H0Z" fill="#fff" opacity="0.16" />
+                    <path d="M0 66C40 52 70 80 112 64S172 48 200 58V80H0Z" fill="#fff" opacity="0.14" />
+                    <path d="M110 0C128 18 162 6 200 22V0Z" fill="#fff" opacity="0.12" />
+                  </svg>
+                  <span className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full ring-2 ring-white/90 sm:h-16 sm:w-16 sm:ring-[3px]">
+                    <Image
+                      src={`/pets/avatars/${animal.value.toLowerCase()}.jpg`}
+                      alt=""
+                      fill
+                      sizes="64px"
+                      className="object-cover transition duration-300 group-hover:scale-110"
+                    />
                   </span>
-                  <span className="min-w-0 text-[13px] leading-tight font-extrabold [overflow-wrap:anywhere] sm:text-lg">
+                  <span className="relative min-w-0 text-[13px] leading-tight font-extrabold [overflow-wrap:anywhere] sm:text-lg">
                     {m.animals[animal.value].shopFor}
                   </span>
                 </Link>
@@ -86,10 +102,10 @@ export default async function HomePage() {
               into the sky-blue hero, and the free-delivery banner overlaps its bottom edge. */}
           <div className="relative -mb-14 self-end">
             <Image
-              src="/hero/pets.jpg"
+              src="/hero/pets-poodle.jpg"
               alt={m.home.heroAlt}
-              width={1180}
-              height={577}
+              width={1160}
+              height={675}
               priority
               sizes="(max-width: 1024px) 100vw, 50vw"
               className="h-auto w-full mix-blend-multiply"

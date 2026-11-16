@@ -70,7 +70,7 @@ export const en = {
     titleLine1: "Your Pet's",
     titleLine2: "Happy Place!",
     intro: "Food, toys, medicine, hygiene and accessories for every pet — delivered to your door in Yerevan.",
-    heroAlt: "A golden retriever, a tabby cat, a grey parrot and a hamster",
+    heroAlt: "A miniature poodle, a tabby cat, a grey parrot and a hamster",
     bannerTitle: "Free delivery in Yerevan",
     bannerText: "On every order from {min} — straight to your door.",
     shopNow: "Shop now",
