@@ -1,14 +1,24 @@
 import { ShieldCheck, Truck } from "lucide-react";
 
 /** A filled paw print (own drawing), colored through `currentColor`. */
-export function Paw({ className, style }: { className?: string; style?: React.CSSProperties }) {
+/** The paw shapes on a 64×64 grid, for use inside another SVG. */
+export function PawShape() {
   return (
-    <svg viewBox="0 0 64 64" aria-hidden className={className} style={style} fill="currentColor">
+    <>
       <ellipse cx="13" cy="27" rx="6" ry="8.5" transform="rotate(-22 13 27)" />
       <ellipse cx="25" cy="14" rx="6.5" ry="9.5" transform="rotate(-8 25 14)" />
       <ellipse cx="40" cy="14" rx="6.5" ry="9.5" transform="rotate(8 40 14)" />
       <ellipse cx="52" cy="27" rx="6" ry="8.5" transform="rotate(22 52 27)" />
       <path d="M32.5 31c-10 0-17.5 9-17.5 17c0 6 5 9.5 10.5 8.3c2.8-.6 4.8-1.6 7-1.6s4.2 1 7 1.6c5.5 1.2 10.5-2.3 10.5-8.3c0-8-7.5-17-17.5-17z" />
+    </>
+  );
+}
+
+/** A filled paw print (own drawing), colored through `currentColor`. */
+export function Paw({ className, style }: { className?: string; style?: React.CSSProperties }) {
+  return (
+    <svg viewBox="0 0 64 64" aria-hidden className={className} style={style} fill="currentColor">
+      <PawShape />
     </svg>
   );
 }
@@ -41,55 +51,66 @@ export default function HeroDecor({ badgeDelivery, badgeCare }: { badgeDelivery:
   );
 }
 
-// Leaves sticking out from behind the blue shape: x, y (where the stem starts), angle, size.
-const LEAVES: [number, number, number, number][] = [
-  [120, 330, -150, 1.5],
-  [150, 270, -115, 1.9],
-  [205, 215, -88, 1.25],
-  [330, 150, -100, 1.3],
-  [372, 150, -62, 1.5],
-  [470, 215, -38, 1.75],
-  [520, 285, -12, 1.45],
-  [545, 360, 14, 1.2],
-];
-
 /**
- * The darker blue shape with plant leaves that sits behind the animals in the hero photo.
- * Rendered inside the photo's box; it reaches above the photo to fill the space there.
+ * A soft blue shape that sits behind the animals in the hero photo. Rendered inside the photo's
+ * box, a little larger than the photo so its edges show around the animals.
  */
 export function HeroBlob() {
   return (
     <svg
       aria-hidden
-      viewBox="0 0 600 560"
+      viewBox="0 0 600 420"
       preserveAspectRatio="none"
-      overflow="visible"
-      className="pointer-events-none absolute -top-[14%] -left-[4%] h-[114%] w-[108%] lg:-top-[36%] lg:h-[136%]"
+      className="pointer-events-none absolute -top-[6%] left-[3%] h-[106%] w-[94%]"
     >
+      <path
+        d="M70 220C60 140 130 70 225 64C290 60 320 30 390 34C490 40 560 110 552 200C548 260 580 300 572 350C564 405 515 420 450 420H140C80 420 40 395 44 345C48 300 76 275 70 220Z"
+        fill="#5aa9dc"
+        opacity="0.45"
+      />
+    </svg>
+  );
+}
+
+/** A Doggy's Shop bandana, drawn for the page edge as decoration. */
+export function Bandana({ className, style }: { className?: string; style?: React.CSSProperties }) {
+  return (
+    <svg viewBox="0 0 240 250" aria-hidden className={className} style={style}>
       <defs>
-        <g id="hero-leaf">
-          <path d="M0 0C14-24 54-36 100-26C78 4 38 16 0 0Z" />
-          <path d="M6-2C36-11 64-19 92-25" fill="none" stroke="#ffffff" strokeOpacity="0.35" strokeWidth="2.5" />
-        </g>
+        <linearGradient id="bandana-cloth" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#f6ecdc" />
+          <stop offset="1" stopColor="#e8d6bb" />
+        </linearGradient>
+        <path id="bandana-text" d="M40 100Q117 120 190 100" />
       </defs>
-
-      <g fill="#3d97d3" opacity="0.6">
-        {LEAVES.map(([x, y, angle, size], i) => (
-          <use key={i} href="#hero-leaf" transform={`translate(${x} ${y}) rotate(${angle}) scale(${size})`} />
-        ))}
+      {/* tie ends */}
+      <path d="M196 46C214 34 232 40 236 56C222 54 210 58 198 64Z" fill="#e3cfb0" />
+      <path d="M200 58C216 66 224 84 216 98C206 88 196 80 188 74Z" fill="#dcc6a5" />
+      {/* folded band */}
+      <path d="M12 40Q120 62 204 44L208 66Q120 84 16 62Z" fill="#eadbc3" />
+      {/* triangle */}
+      <path d="M18 60Q120 84 206 64L130 232Q120 248 108 232Z" fill="url(#bandana-cloth)" />
+      {/* folds */}
+      <path d="M120 82Q118 160 118 236" fill="none" stroke="#d6c09e" strokeWidth="3" opacity="0.5" />
+      <path d="M60 80Q90 140 112 226" fill="none" stroke="#d6c09e" strokeWidth="2" opacity="0.4" />
+      {/* stitching */}
+      <path
+        d="M30 70Q120 92 194 74L128 220Q120 232 112 220Z"
+        fill="none"
+        stroke="#c9ae86"
+        strokeWidth="2"
+        strokeDasharray="5 5"
+      />
+      {/* knot */}
+      <ellipse cx="200" cy="56" rx="13" ry="11" fill="#dcc6a5" />
+      <text fontSize="19" fontWeight="800" fill="#0b4470" fontFamily="inherit">
+        <textPath href="#bandana-text" startOffset="50%" textAnchor="middle">
+          Doggy&apos;s Shop
+        </textPath>
+      </text>
+      <g transform="translate(94 128) scale(0.8)" fill="#f4821f">
+        <PawShape />
       </g>
-
-      <path
-        d="M95 300C80 215 150 150 240 140C300 133 330 95 395 95C485 95 560 165 555 255C552 330 590 385 585 470C580 540 510 560 420 560H130C60 560 25 520 35 455C45 390 105 370 95 300Z"
-        fill="#58ade3"
-      />
-      <path
-        d="M150 330C145 265 200 215 270 210C330 205 350 175 405 178C470 182 510 235 505 300C500 360 530 410 520 470C512 525 460 545 400 545H190C130 545 105 505 112 455C118 405 152 385 150 330Z"
-        fill="#6fbdea"
-        opacity="0.75"
-      />
-      <circle cx="560" cy="150" r="14" fill="#ffffff" opacity="0.35" />
-      <circle cx="70" cy="215" r="9" fill="#f4821f" opacity="0.45" />
     </svg>
   );
 }
