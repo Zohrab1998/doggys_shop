@@ -2,7 +2,7 @@ import { Bone, Droplets, type LucideIcon, Pill, ShieldCheck, ShoppingBag, ToyBri
 import Image from "next/image";
 import Link from "next/link";
 import type { ProductCategory } from "@prisma/client";
-import HeroDecor, { Paw } from "@/components/hero-decor";
+import HeroDecor, { HeroBlob, Paw } from "@/components/hero-decor";
 import ProductCard from "@/components/product-card";
 import { fmt } from "@/i18n/config";
 import { getI18n } from "@/i18n/server";
@@ -47,7 +47,7 @@ export default async function HomePage() {
       {/* ===== HERO ===== */}
       <section className="relative -mt-24 overflow-hidden bg-gradient-to-br from-brand-sky-light via-brand-sky-wave to-brand-sky pt-24">
         <HeroDecor badgeDelivery={m.home.perkDeliveryTitle} badgeCare={m.home.perkCareTitle} />
-        <div className="relative mx-auto grid max-w-7xl gap-8 px-4 pt-10 pb-14 sm:px-6 lg:grid-cols-[1fr_1.15fr] lg:items-center lg:pt-14">
+        <div className="relative mx-auto grid max-w-7xl gap-12 px-4 pt-10 pb-14 sm:px-6 lg:grid-cols-[1fr_1.15fr] lg:items-center lg:pt-14">
           <div>
             <p className="flex items-center gap-2 text-sm font-bold tracking-[0.2em] text-brand-blue uppercase">
               <Paw className="h-6 w-6 -rotate-12 text-brand-orange" />
@@ -98,17 +98,18 @@ export default async function HomePage() {
             </div>
           </div>
 
-          {/* Studio photo of the four pets. `mix-blend-multiply` lets its white backdrop melt
-              into the sky-blue hero, and the free-delivery banner overlaps its bottom edge. */}
-          <div className="relative -mb-14 self-end">
+          {/* The four pets, cut out of their studio photo, standing on a darker blue shape. The
+              free-delivery banner overlaps the bottom edge of the photo. */}
+          <div className="relative -mb-6 self-end">
+            <HeroBlob />
             <Image
-              src="/hero/pets-poodle.jpg"
+              src="/hero/pets-cutout.webp"
               alt={m.home.heroAlt}
-              width={1160}
-              height={675}
+              width={1140}
+              height={718}
               priority
               sizes="(max-width: 1024px) 100vw, 50vw"
-              className="h-auto w-full mix-blend-multiply"
+              className="relative h-auto w-full drop-shadow-[0_12px_16px_rgba(11,68,112,0.25)]"
             />
           </div>
         </div>
